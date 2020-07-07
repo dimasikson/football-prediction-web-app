@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <link rel="shortcut icon" href="">
+        <style>
+
+            body, html {
+                margin: 0;
+                color: azure;
+                background-color: #2b2d2f;
+                font-family: sans-serif;
+            }
+ 
+            .content {
+                margin: 0 auto;
+                width: 1100px;
+            }
+ 
+            .matchMenu {
+                float: left;
+                width: 350px;
+				padding: 10px 10px;
+				margin: 4px;
+                background-color: #2f363b;
+                border-radius: 10px;
+                color: white;
+                font-weight: bold;
+            }
+
+            .header{
+                float: left;
+                width: 988px; 
+                /* 600 + 350 + 4*2 ??*/
+				padding: 5px;
+				margin: 4px;
+                background-color: #2f363b;
+                border-radius: 10px;
+                color: white;
+                font-weight: bold;
+            }
+
+            .dateNode {
+                margin: 0 auto;
+				padding: 10px 20px;
+				margin-right: 2px;
+                background-color: #2f363b;
+                border-radius: 10px;
+                color: white;
+            }
+
+            .button {
+				font-size: 20px;
+                padding: 4px 10px;
+                background-color: #2f363b;
+                border: 0px solid #2f363b;
+                border-radius: 10px;
+                font-family: sans-serif;
+                margin: 2px;
+                color: rgb(200, 200, 200);
+            }
+
+            .topButton {
+                float: right;
+                margin: 3px;
+                height: 20px;
+            }
+
+            .howDoIReadThisTab{
+                top: 20%;
+                left: 10%;
+                /* height: 50%; */
+                width: 80%;
+                position: absolute;
+                background-color:rgb(89, 105, 110);
+                border-radius: 20px;
+                display: none;
+                opacity: 0.95;
+                padding: 20px;
+                color: black;
+                font-size: larger;
+            }
+
+            .darkBackground {
+                height: 200%;
+                width: 100%;
+                position: absolute;
+                background-color: black;
+                display: none;
+                opacity: 0.5;
+            }
+
+            .leagueButton {
+                margin: 5px; 
+                /* width:15%;  */
+                height: 25px;
+                font-size: medium;
+                border-radius: 5px; 
+                border: 0px solid #36454f; 
+                background-color: #36454f; 
+                color: white;
+            }
+
+            .returnsTab {
+                margin: 5px; 
+                font-size: medium;
+                border-radius: 5px; 
+                border: 0px solid #36454f; 
+                background-color: #36454f; 
+                color: white;
+                padding: 10px;
+            }
+
+        </style>
+        <title>Football result prediction</title>
+    </head>
+    <body>
+        <!-- import libraries -->
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+        <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+
+        <div id='darkBackground' class='darkBackground'></div>
+        <div id='howDoIReadThisTab' class='howDoIReadThisTab'> 
+            
+            <b>"What are we predicting?"</b> <br> 
+                - We are predicting the goal difference (home team perspective)! Game that ends 2-0 corresponds to +2, 1-2 to -1, 3-3 to 0, etc. <br><br>
+            <b>"What is XGBoost?"</b> <br> 
+                - XGBoost is a decision tree method improved using various ensemble methods like boosting and bagging. It's awesome! <a href="https://towardsdatascience.com/https-medium-com-vishalmorde-xgboost-algorithm-long-she-may-rein-edd9f99be63d">Read more.</a> <br><br>
+            <b>"What is SHAP?"</b> <br>
+                - SHAP is a way to reverse engineer output of a complex model using game theory. It also allows us to display contributions of each feature to the output in a GAM format, which is highly interpretable! <a href="https://github.com/slundberg/shap">Read more.</a> <br><br>
+            <b>"What are the bars in the chart?"</b> <br>
+                - The SHAP local explanations! They show the contribution made by each variable to the output. <br><br>
+            <b>"How do I read the odds?"</b> <br>
+                - We use decimal odds. If I bet 1 unit of currency and I win, I get in return 1*X my money (X is the betting odd).<br>
+
+        </div>
+
+        <div class="content" id="mainContentDiv">
+            <div class="header" id="headerTitle">
+                <h1 style="padding-left: 60px;">Football result prediction</h1>
+            </div>
+
+            <div class="matchMenu" id="resultsMenu">
+
+                <button id='leagueButton:E0' class="leagueButton">Premier League</button>
+                <button id='leagueButton:D1' class="leagueButton">Bundesliga</button>
+                <button id='leagueButton:SP1' class="leagueButton">La Liga</button>
+                <button id='leagueButton:I1' class="leagueButton">Serie A</button>
+                <button id='leagueButton:F1' class="leagueButton">Ligue 1</button>
+
+                <div id="resultsMenuReturns" class="returnsTab"> 
+                    
+                    <div id="returnsMenuTitle" style="color: white;">Returns report:</div>
+                    <div id="returnsMenuAcc" style="color: white;">
+                        Accuracy: <span id="returnsMenuAccVal" style="color: white;">x% (n of N)</span>
+                    </div>
+                    <div id="returnsMenuROI" style="color: white;">
+                        ROI: <span id="returnsMenuROIVal" style="color: white;">y%</span>
+                    </div>
+
+                </div>
+
+                <h2 style="padding-left: 10px; color: white;">Fixtures / Results:</h2>
+
+                <div id="resultsMenuGames"></div>
+
+            </div>
+
+            <span class="matchMenu" id="predictionTab" style="width: 600px;">
+            
+                <div style="padding-left: 10px; color: white; font-size: large; height: 50px; margin: 5px;" id='predictionTabTeams'>
+                    <span style='float: left;' id='predictionTabTeamNames'></span>
+                    <button class="topButton" id='escButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;">x</button>
+                    <button class="topButton" id='howDoIReadThisButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;">
+                        How do I read this?
+                    </button>
+                </div>
+            
+                <div style="padding-left: 10px; color: white; margin-left: 10px;" id='predictionTabRes'></div>
+                <div style="padding-left: 10px; color: white; margin-left: 10px;" id='predictionTabPred'></div>
+                <div style="padding-left: 10px; color: white; margin: 10px; margin-top: 20px;" id='predictionTabOdds'>
+                    
+                    <span id = 'HomeOdds' style="margin: 3px; padding: 5px; border-radius: 5px;"></span>
+                    <span id = 'DrawOdds' style="margin: 3px; padding: 5px; border-radius: 5px;"></span>
+                    <span id = 'AwayOdds' style="margin: 3px; padding: 5px; border-radius: 5px;"></span>
+
+                </div>
+
+                <div style="margin-top: 30px; margin-left: 10px; color: lightgrey; border: 0px solid #36454f; border-radius: 5px; padding: 10px;"> XGBoost model, SHAP local explanation: 
+                    <canvas id="chartCanvas" height="420" width="550" style="margin: 20px; margin-top: 0px; margin-bottom: 0px;">
+                    </canvas>
+                </div>
+
+            </span>
+
+    
+        </div>
+
+        <script src='static/index.js'></script>
+
+	</body>
+</html>
+
