@@ -22,7 +22,7 @@
  
             .matchMenu {
                 float: left;
-                width: 350px;
+                width: 300px;
 				padding: 10px 10px;
 				margin: 4px;
                 background-color: #2f363b;
@@ -33,7 +33,7 @@
 
             .header{
                 float: left;
-                width: 988px; 
+                width: 938px; 
                 /* 600 + 350 + 4*2 ??*/
 				padding: 5px;
 				margin: 4px;
@@ -140,11 +140,13 @@
         </div>
 
         <div class="content" id="mainContentDiv">
-            <div class="header" id="headerTitle">
+            <!-- <div class="header" id="headerTitle">
                 <h1 style="padding-left: 60px;">Football result prediction</h1>
-            </div>
+            </div> -->
 
             <div class="matchMenu" id="resultsMenu">
+
+                <h2 style="padding-left: 10px;">Football result prediction</h2>
 
                 <button id='leagueButton:E0' class="leagueButton">Premier League</button>
                 <button id='leagueButton:D1' class="leagueButton">Bundesliga</button>
@@ -173,7 +175,7 @@
             <span class="matchMenu" id="predictionTab" style="width: 600px;">
             
                 <div style="padding-left: 10px; color: white; font-size: large; height: 50px; margin: 5px;" id='predictionTabTeams'>
-                    <span style='float: left;' id='predictionTabTeamNames'></span>
+                    <span style='float: left; font-size: large;' id='predictionTabTeamNames'></span>
                     <button class="topButton" id='escButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;">x</button>
                     <button class="topButton" id='howDoIReadThisButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;">
                         How do I read this?

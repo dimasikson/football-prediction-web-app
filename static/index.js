@@ -52,6 +52,19 @@ const monthsConvert = {
 
 var canvas = document.getElementById("chartCanvas").getContext('2d');
 
+const teamNameChange = {
+    'Fortuna Dusseldorf':'Fortuna',
+    'Union Berlin':'Union B.',
+    'Bayern Munich':'Bayern',
+    'Werder Bremen':'Werder',
+    'Crystal Palace':'C Palace',
+    'Sheffield United':'Sheffield',
+    'Bournemouth':"B'mouth",
+    'Southampton':"Soton",
+    'Tottenham': 'Spurs',
+    'Man United': 'Man Utd'
+};
+
 var loadMatches = function (json, league) {
 
     var jsonFilteredGames = {};
@@ -104,12 +117,19 @@ var loadMatches = function (json, league) {
         // var hGls = jsonFilteredGames[i]['HomeGoals'];
         // var aGls = jsonFilteredGames[i]['AwayGoals'];
 
+        if (hTeam in teamNameChange){
+            hTeam = teamNameChange[hTeam]
+        };
+        if (aTeam in teamNameChange){
+            aTeam = teamNameChange[aTeam]
+        };
+
         var node = document.createElement("button");
 
         node.classList.add('button');
-        node.value = hTeam + ' - ' + aTeam;
-        // node.type = 'button';
+        node.innerHTML = hTeam + ' - ' + aTeam;
         node.id = 'game:' + i.toString();
+
         node.addEventListener('click', matchButtonsOnClick);
 
         var nodeDiv = document.createElement("div");
@@ -242,7 +262,17 @@ const matchButtonsOnClick = function(event) {
     var dateSplit = gameStats['Date'].split(' ')[0].split('-');
     var dateDisplay = dateSplit[2] + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0];
 
-    var teamNames = gameStats['HomeTeam'] + ' - ' + gameStats['AwayTeam'] + ', ' + dateDisplay;
+    var hTeam = gameStats['HomeTeam'];
+    var aTeam = gameStats['AwayTeam'];
+    
+    if (hTeam in teamNameChange){
+        hTeam = teamNameChange[hTeam]
+    };
+    if (aTeam in teamNameChange){
+        aTeam = teamNameChange[aTeam]
+    };
+
+    var teamNames = hTeam + ' - ' + aTeam + ', ' + dateDisplay;
 
     $('#predictionTabTeamNames').html(
         teamNames
