@@ -177,7 +177,7 @@ var loadMatches = function (json, league) {
         function () {							
 
             $(this).animate({
-                backgroundColor: "#36454f"
+                backgroundColor: "#777777"
             }, 100 );
 
             $(this).css('cursor','pointer');
@@ -186,7 +186,7 @@ var loadMatches = function (json, league) {
         function () {
 
             $(this).animate({
-                backgroundColor: "#2f363b"
+                backgroundColor: "#36454f"
             }, 100 );
 
         }
@@ -242,7 +242,7 @@ const matchButtonsOnClick = function(event) {
     var dateSplit = gameStats['Date'].split(' ')[0].split('-');
     var dateDisplay = dateSplit[2] + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0];
 
-    var teamNames = gameStats['HomeTeam'] + ' - ' + gameStats['AwayTeam'] + '<br>' + dateDisplay;
+    var teamNames = gameStats['HomeTeam'] + ' - ' + gameStats['AwayTeam'] + ', ' + dateDisplay;
 
     $('#predictionTabTeamNames').html(
         teamNames
