@@ -104,11 +104,11 @@ var loadMatches = function (json, league) {
         // var hGls = jsonFilteredGames[i]['HomeGoals'];
         // var aGls = jsonFilteredGames[i]['AwayGoals'];
 
-        var node = document.createElement("input");
+        var node = document.createElement("button");
 
         node.classList.add('button');
         node.value = hTeam + ' - ' + aTeam;
-        node.type = 'button';
+        // node.type = 'button';
         node.id = 'game:' + i.toString();
         node.addEventListener('click', matchButtonsOnClick);
 
