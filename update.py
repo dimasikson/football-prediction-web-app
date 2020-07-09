@@ -38,8 +38,8 @@ def updatePredictions(download, preprocess, predictYN, leagues, firstSeason, fir
 
 
 # updatePredictions(
-#     download=True, 
-#     preprocess=True, 
+#     download=False, 
+#     preprocess=False, 
 #     predictYN=True, 
 #     leagues=leagues,
 #     firstSeason=firstSeason, 

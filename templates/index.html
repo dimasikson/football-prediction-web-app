@@ -104,18 +104,22 @@
                 color: white;
             }
 
-            .returnsTab {
+            th, td {
                 margin: 5px; 
                 font-size: medium;
                 border-radius: 5px; 
-                border: 0px solid #36454f; 
+                border: 2px solid #36454f; 
                 background-color: #36454f; 
                 color: white;
-                padding: 10px;
+                padding: 4px;
+            }
+
+            .dateROI {
+                margin-left: 10px;
             }
 
         </style>
-        <title>Football result prediction</title>
+        <title>Football result predictor</title>
     </head>
     <body>
         <!-- import libraries -->
@@ -146,7 +150,7 @@
 
             <div class="matchMenu" id="resultsMenu">
 
-                <h2 style="padding-left: 10px;">Football result prediction</h2>
+                <div style="font-size: x-large; padding: 10px; padding-right: 0px;">Football result predictor</div>
 
                 <button id='leagueButton:E0' class="leagueButton">Premier League</button>
                 <button id='leagueButton:D1' class="leagueButton">Bundesliga</button>
@@ -154,15 +158,34 @@
                 <button id='leagueButton:I1' class="leagueButton">Serie A</button>
                 <button id='leagueButton:F1' class="leagueButton">Ligue 1</button>
 
-                <div id="resultsMenuReturns" class="returnsTab"> 
+                <div id="resultsMenuReturns">
                     
-                    <div id="returnsMenuTitle" style="color: white;">Returns report:</div>
-                    <div id="returnsMenuAcc" style="color: white;">
-                        Accuracy: <span id="returnsMenuAccVal" style="color: white;">x% (n of N)</span>
-                    </div>
-                    <div id="returnsMenuROI" style="color: white;">
-                        ROI: <span id="returnsMenuROIVal" style="color: white;">y%</span>
-                    </div>
+                    <table style="margin-top: 10px;">
+                        <tr>
+                            <th>Predicted</th>
+                            <th>Home</th>
+                            <th>Draw</th>
+                            <th>Away</th>
+                        </tr>
+                        <tr>
+                            <td>Games</td>
+                            <td id="valGamesH">420</td>
+                            <td id="valGamesD">420</td>
+                            <td id="valGamesA">420</td>
+                        </tr>    
+                        <tr>
+                            <td>Accuracy</td>
+                            <td id="valAccH">100%</td>
+                            <td id="valAccD">100%</td>
+                            <td id="valAccA">100%</td>
+                        </tr>    
+                        <tr>
+                            <td>ROI</td>
+                            <td id="valROIH">+100%</td>
+                            <td id="valROID">+100%</td>
+                            <td id="valROIA">+100%</td>
+                        </tr>    
+                    </table>
 
                 </div>
 

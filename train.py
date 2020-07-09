@@ -111,7 +111,7 @@ def predict(leagues):
         test.loc[:, 'intercept'] = explainer.expected_value
         test.loc[:, 'preds'] = xgb_model_loaded.predict(xg_test)
 
-        maxDt = max(test.loc[:, 'Date']) + pd.DateOffset(1-7*4)
+        maxDt = max(test.loc[:, 'Date']) + pd.DateOffset(1-7*52)
 
         tmp = test.loc[test.loc[:, 'Date']>=maxDt, :]
 

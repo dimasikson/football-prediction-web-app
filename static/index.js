@@ -57,6 +57,7 @@ const teamNameChange = {
     'Union Berlin':'Union B.',
     'Bayern Munich':'Bayern',
     'Werder Bremen':'Werder',
+    'Ein Frankfurt': 'Eintracht',
     'Crystal Palace':'C Palace',
     'Sheffield United':'Sheffield',
     'Bournemouth':"B'mouth",
@@ -86,17 +87,31 @@ var loadMatches = function (json, league) {
 
     document.getElementById("resultsMenuGames").innerHTML = '';
 
+    var countGamesDate = {};
+    var sumReturnDate = {};
+
     for (var i = 0; i < matchDates.length; i++){
 
         var node = document.createElement("div");
 
+        countGamesDate[matchDates[i]] = 0;
+        sumReturnDate[matchDates[i]] = 0;
+
         var dateSplit = matchDates[i].split('-');
         var dateDisplay = dateSplit[2] + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0];
 
-        var textnode = document.createTextNode(dateDisplay);
-        var nodeDiv = document.createElement("div");
+        var textnode = document.createElement('span');
+        textnode.innerHTML = dateDisplay;
 
+        var nodeDiv = document.createElement("div");
         nodeDiv.appendChild(textnode);
+
+        var spanROI = document.createElement("span");
+        spanROI.innerHTML = '+100% ROI';
+        spanROI.classList.add('dateROI');
+        spanROI.id = 'date:' + matchDates[i] + ':ROI';
+        nodeDiv.appendChild(spanROI);
+
         node.appendChild(nodeDiv);
         node.classList.add('dateNode');
         node.id = 'date:' + matchDates[i];
@@ -105,17 +120,15 @@ var loadMatches = function (json, league) {
 
     }
 
-    var countGames = 0;
-    var countWins = 0;
-    var sumReturn = 0;
+    var countGames = {'H':0,'D':0,'A':0};
+    var countWins = {'H':0,'D':0,'A':0};
+    var sumReturn = {'H':0,'D':0,'A':0};
 
     for (var i in jsonFilteredGames){
         var matchDate = jsonFilteredGames[i]['Date'].split(' ')[0];
 
         var hTeam = jsonFilteredGames[i]['HomeTeam'];
         var aTeam = jsonFilteredGames[i]['AwayTeam'];
-        // var hGls = jsonFilteredGames[i]['HomeGoals'];
-        // var aGls = jsonFilteredGames[i]['AwayGoals'];
 
         if (hTeam in teamNameChange){
             hTeam = teamNameChange[hTeam]
@@ -158,40 +171,82 @@ var loadMatches = function (json, league) {
 
         if (jsonFilteredGames[i]['FTR'] != 0){
 
-            countGames++;
+            countGames[predResult]++;
+            countGamesDate[matchDate]++;
 
             if (jsonFilteredGames[i]['FTR'] == predResult){
                 
-                countWins++;
+                countWins[predResult]++;
 
-                sumReturn = sumReturn + jsonFilteredGames[i][lookupOdds[predResult]]*20
+                sumReturn[predResult] = sumReturn[predResult] + jsonFilteredGames[i][lookupOdds[predResult]]*20
+                sumReturnDate[matchDate] = sumReturnDate[matchDate] + jsonFilteredGames[i][lookupOdds[predResult]]*20
 
             }
                 
-            sumReturn--;
+            sumReturn[predResult]--;
+            sumReturnDate[matchDate]--;
 
         }
 
     };
 
-    $('#returnsMenuAccVal').html(
-        Math.round(countWins*100/countGames)+'% ('+countWins+' of '+countGames+')'
-    );
 
-    var returns = Math.round(sumReturn*100/countGames);
+    var HDA = ['H', 'D', 'A'];
 
-    if (returns>=0){
-        var colorRet = '#42ffa7';
-        var signRet = '+';
-    } else {
-        var colorRet = '#fd3772';
-        var signRet = '-';
+    for (var i in HDA){
+
+        $('#valGames'+HDA[i]).html(
+            countGames[HDA[i]]
+        );
+
+        $('#valAcc'+HDA[i]).html(
+            Math.round(countWins[HDA[i]]*100/countGames[HDA[i]])+'%'
+        );
+
+        var returns = Math.round(sumReturn[HDA[i]]*100/countGames[HDA[i]]);
+
+        if (returns>=0){
+            var colorRet = '#42ffa7';
+            var signRet = '+';
+        } else {
+            var colorRet = '#fd3772';
+            var signRet = '-';
+        }
+
+        $('#valROI'+HDA[i]).html(
+            signRet+Math.abs(returns)+'%'
+        );
+        $('#valROI'+HDA[i]).css('color',colorRet);
+
     }
 
-    $('#returnsMenuROIVal').html(
-        signRet+Math.abs(returns)+'%'
-    );
-    $('#returnsMenuROIVal').css('color',colorRet);
+    for (var i in countGamesDate){
+
+        var dateROItext;
+        var colorRet = '#eeff90';
+
+        if (countGamesDate[i]==0){
+            dateROItext = 'Upcoming';
+        } else {
+
+            var returnDate = Math.round(sumReturnDate[i]*100/countGamesDate[i])
+
+            if (returnDate>=0){
+                var colorRet = '#42ffa7';
+                var signRetDate = '+';
+            } else {
+                var colorRet = '#fd3772';
+                var signRetDate = '-';    
+            }
+
+            dateROItext = signRetDate + Math.abs(returnDate) + '% ROI';
+        }
+
+        document.getElementById('date:'+i+':ROI').innerHTML = dateROItext;
+        document.getElementById('date:'+i+':ROI').style.color = colorRet;
+
+    }
+
 
     $('.button').hover(
         function () {							
