@@ -8,6 +8,15 @@ import datetime
 import os
 
 from update import updatePredictions
+from aws import downloadFileAWS
+
+# AWS access
+AWS_ACCESS_KEY_ID = 'AKIAIDGSP4IVPNH4W7BQ'
+AWS_SECRET_ACCESS_KEY = '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'
+BUCKET_NAME = 'football-prediction-web-app'
+fpath = "static/predicted.txt"
+
+downloadFileAWS(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, BUCKET_NAME, fpath)
 
 app = Flask(__name__)
 scheduler = APScheduler()

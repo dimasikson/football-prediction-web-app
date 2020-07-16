@@ -1,5 +1,6 @@
 from prepro import downloadFiles, preProcess
 from train import predict
+from aws import up
 
 firstSeason = 0
 firstSeasonTest = 19
@@ -12,6 +13,13 @@ leagues = {
     'SP1': 5,
     'F1': 5
 }
+
+# AWS access
+AWS_ACCESS_KEY_ID = 'AKIAIDGSP4IVPNH4W7BQ'
+AWS_SECRET_ACCESS_KEY = '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'
+BUCKET_NAME = 'football-prediction-web-app'
+fpath = "static/predicted.txt"
+
 
 def updatePredictions(download, preprocess, predictYN, leagues, firstSeason, firstSeasonTest, lastSeason, train):
 
@@ -35,6 +43,7 @@ def updatePredictions(download, preprocess, predictYN, leagues, firstSeason, fir
 
     if predictYN:
         predict(leagues=leagues)
+        uploadFileAWS(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, BUCKET_NAME, fpath)
 
 
 # updatePredictions(
