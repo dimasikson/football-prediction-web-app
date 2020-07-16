@@ -1,6 +1,6 @@
 from prepro import downloadFiles, preProcess
 from train import predict
-from aws import up
+from aws import uploadFileAWS
 
 firstSeason = 0
 firstSeasonTest = 19
