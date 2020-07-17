@@ -58,6 +58,7 @@ const teamNameChange = {
     'Bayern Munich':'Bayern',
     'Werder Bremen':'Werder',
     'Ein Frankfurt': 'Eintracht',
+    'Leverkusen': 'Bayer 04',
     'Crystal Palace':'C Palace',
     'Sheffield United':'Sheffield',
     'Bournemouth':"B'mouth",
@@ -147,9 +148,10 @@ var loadMatches = function (json, league) {
 
         var nodeDiv = document.createElement("div");
 
-        nodeDiv.appendChild(node);
-
-        document.getElementById('date:' + matchDate).appendChild(nodeDiv);
+        var resultColorSpan = document.createElement("span");
+        resultColorSpan.classList.add('resultColorSpan');
+        resultColorSpan.style.backgroundColor = '#eeff90';
+        resultColorSpan.style.color = '#eeff90';
 
         // returns tab
 
@@ -174,12 +176,18 @@ var loadMatches = function (json, league) {
             countGames[predResult]++;
             countGamesDate[matchDate]++;
 
+            resultColorSpan.style.backgroundColor = '#fd3772';
+            resultColorSpan.style.color = '#fd3772';   
+
             if (jsonFilteredGames[i]['FTR'] == predResult){
                 
                 countWins[predResult]++;
 
-                sumReturn[predResult] = sumReturn[predResult] + jsonFilteredGames[i][lookupOdds[predResult]]*20
-                sumReturnDate[matchDate] = sumReturnDate[matchDate] + jsonFilteredGames[i][lookupOdds[predResult]]*20
+                sumReturn[predResult] = sumReturn[predResult] + jsonFilteredGames[i][lookupOdds[predResult]]*20;
+                sumReturnDate[matchDate] = sumReturnDate[matchDate] + jsonFilteredGames[i][lookupOdds[predResult]]*20;
+
+                resultColorSpan.style.backgroundColor = '#42ffa7';
+                resultColorSpan.style.color = '#42ffa7';        
 
             }
                 
@@ -187,6 +195,16 @@ var loadMatches = function (json, league) {
             sumReturnDate[matchDate]--;
 
         }
+
+        resultColorSpan.innerHTML = '.';
+        // resultColorSpan.innerHTML = predResult;
+
+        node.appendChild(resultColorSpan);
+
+        nodeDiv.appendChild(node);
+        
+        document.getElementById('date:' + matchDate).appendChild(nodeDiv);
+
 
     };
 
@@ -285,10 +303,6 @@ const matchButtonsOnClick = function(event) {
     var gameId = event.srcElement.id.split(':')[1];
 
     var gameStats = json[gameId];
-
-    // console.log(gameStats);
-
-    // document.getElementById('predictionTabTeams').value = gameStats['HomeTeam'];
 
     var predResult;
 
