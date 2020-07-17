@@ -22,7 +22,7 @@
  
             .matchMenu {
                 float: left;
-                width: 300px;
+                width: 330px;
 				padding: 10px 10px;
 				margin: 4px;
                 background-color: #2f363b;
@@ -176,24 +176,28 @@
                             <th>Home</th>
                             <th>Draw</th>
                             <th>Away</th>
+                            <th>Total</th>
                         </tr>
                         <tr>
                             <td>Games</td>
                             <td id="valGamesH">420</td>
                             <td id="valGamesD">420</td>
                             <td id="valGamesA">420</td>
+                            <td id="valGamesTTL">420</td>
                         </tr>    
                         <tr>
                             <td>Accuracy</td>
                             <td id="valAccH">100%</td>
                             <td id="valAccD">100%</td>
                             <td id="valAccA">100%</td>
+                            <td id="valAccTTL">100%</td>
                         </tr>    
                         <tr>
                             <td>ROI</td>
                             <td id="valROIH">+100%</td>
                             <td id="valROID">+100%</td>
                             <td id="valROIA">+100%</td>
+                            <td id="valROITTL">+100%</td>
                         </tr>    
                     </table>
 
@@ -205,13 +209,13 @@
 
             </div>
 
-            <span class="matchMenu" id="predictionTab" style="width: 600px;">
+            <span class="matchMenu" id="predictionTab" style="width: 400px;">
             
                 <div style="padding-left: 10px; color: white; font-size: large; height: 50px; margin: 5px;" id='predictionTabTeams'>
                     <span style='float: left; font-size: large;' id='predictionTabTeamNames'></span>
                     <button class="topButton" id='escButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;">x</button>
                     <button class="topButton" id='howDoIReadThisButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;">
-                        How do I read this?
+                        How to read this?
                     </button>
                 </div>
             
@@ -225,11 +229,15 @@
 
                 </div>
 
-                <div style="margin-top: 30px; margin-left: 10px; color: lightgrey; border: 0px solid #36454f; border-radius: 5px; padding: 10px;"> XGBoost model, SHAP local explanation: 
+                <div style="margin-top: 30px; margin-left: 0px; color: lightgrey; border: 0px solid #36454f; border-radius: 5px; padding: 10px;"> XGBoost model, SHAP local explanation: 
                     <canvas id="chartCanvas" height="420" width="550" style="margin: 20px; margin-top: 0px; margin-bottom: 0px;">
                     </canvas>
                 </div>
 
+                <div class="matchMenu" id="backButtonUnderPredictionsTab" style="background-color: #36454f; width: 95%; margin: 0 auto; font-size: x-large;">
+                    <div style="margin-left: 25%; width: 100%;">Back to Menu</div>
+                </div>
+    
             </span>
 
     

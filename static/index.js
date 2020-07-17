@@ -2,6 +2,7 @@
 // main script
 
 $('#predictionTab').hide();
+$('#backButtonUnderPredictionsTab').hide();
 
 var league = 'E0';
 // E0
@@ -29,7 +30,11 @@ var json = (function () {
 
 json = JSON.parse(json);
 
-// console.log(json);
+function isMobileDevice() {
+    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+};
+
+const mobileFlag = isMobileDevice();
 
 function onlyUnique(value, index, self) { 
     return self.indexOf(value) === index;
@@ -209,19 +214,28 @@ var loadMatches = function (json, league) {
     };
 
 
-    var HDA = ['H', 'D', 'A'];
+    var HDA = ['H', 'D', 'A', 'TTL'];
 
     for (var i in HDA){
 
-        $('#valGames'+HDA[i]).html(
-            countGames[HDA[i]]
-        );
+        var returns;
+        var acc;
+        var count;
 
-        $('#valAcc'+HDA[i]).html(
-            Math.round(countWins[HDA[i]]*100/countGames[HDA[i]])+'%'
-        );
 
-        var returns = Math.round(sumReturn[HDA[i]]*100/countGames[HDA[i]]);
+        if ( HDA[i] == 'TTL' ) {
+
+            count = countGames['H']+countGames['D']+countGames['A'];    
+            returns = Math.round( (sumReturn['H']+sumReturn['D']+sumReturn['A'])*100 / count );
+            acc = Math.round( (countWins['H']+countWins['D']+countWins['A'])*100 / count );
+
+        } else {
+
+            count = countGames[HDA[i]];    
+            returns = Math.round(sumReturn[HDA[i]]*100/count);
+            acc = Math.round(countWins[HDA[i]]*100/count);
+
+        }
 
         if (returns>=0){
             var colorRet = '#42ffa7';
@@ -230,6 +244,14 @@ var loadMatches = function (json, league) {
             var colorRet = '#fd3772';
             var signRet = '-';
         }
+
+        $('#valAcc'+HDA[i]).html(
+            acc+'%'
+        );
+
+        $('#valGames'+HDA[i]).html(
+            count
+        );
 
         $('#valROI'+HDA[i]).html(
             signRet+Math.abs(returns)+'%'
@@ -291,6 +313,11 @@ const matchButtonsOnClick = function(event) {
 
     $('#predictionTab').show();
 
+    if (mobileFlag==true){
+        $('#backButtonUnderPredictionsTab').show();
+        $('#resultsMenu').hide();
+    }
+
     var scrollThr = 300;
 
     if (document.body.scrollTop > scrollThr || document.documentElement.scrollTop > scrollThr) {
@@ -341,7 +368,7 @@ const matchButtonsOnClick = function(event) {
         aTeam = teamNameChange[aTeam]
     };
 
-    var teamNames = hTeam + ' - ' + aTeam + ', ' + dateDisplay;
+    var teamNames = hTeam + ' - ' + aTeam + '<br>' + dateDisplay;
 
     $('#predictionTabTeamNames').html(
         teamNames
@@ -386,7 +413,7 @@ const matchButtonsOnClick = function(event) {
 
     // DRAWING OF THE CHART
 
-    const chartWidth = 200;
+    const chartWidth = 150;
     const chartHeight = 500;
 
     var chartStats = {
@@ -440,7 +467,7 @@ const matchButtonsOnClick = function(event) {
             canvas.fillStyle = '#fd3772';
         };
 
-        canvas.fillRect(250+50+chartXs[i-1]*chartWidth,y,changeX,10);
+        canvas.fillRect(150+50+chartXs[i-1]*chartWidth,y,changeX,10);
 
         // if ( i > 1 ){
         //     canvas.fillStyle = '#000000';
@@ -451,20 +478,20 @@ const matchButtonsOnClick = function(event) {
 
     canvas.fillStyle = '#000000';
 
-    canvas.fillRect(250+50+chartXs[0]*chartWidth,20,1,chartHeight)
+    canvas.fillRect(150+50+chartXs[0]*chartWidth,20,1,chartHeight)
 
     canvas.beginPath();
     canvas.setLineDash([5, 15]);
-    canvas.moveTo(250+50+chartXs[chartXs.length-1]*chartWidth,20);
-    canvas.lineTo(250+50+chartXs[chartXs.length-1]*chartWidth+1,20+chartHeight);
+    canvas.moveTo(150+50+chartXs[chartXs.length-1]*chartWidth,20);
+    canvas.lineTo(150+50+chartXs[chartXs.length-1]*chartWidth+1,20+chartHeight);
     canvas.stroke();
 
     canvas.fillStyle = '#000000';
     canvas.font = "20px sans-serif";
 
     canvas.textAlign = 'end';
-    canvas.fillText('Intercept: '+Math.round(gameStats['intercept']*1000)/100,250+chartXs[0]*chartWidth+20,y+10+30);
-    canvas.fillText('Prediction: '+Math.round(gameStats['preds']*1000)/100,250+chartXs[chartXs.length-1]*chartWidth+20,y+10+30*2);
+    canvas.fillText('Intercept: '+Math.round(gameStats['intercept']*1000)/100,150+chartXs[0]*chartWidth+20,y+10+30);
+    canvas.fillText('Prediction: '+Math.round(gameStats['preds']*1000)/100,150+chartXs[chartXs.length-1]*chartWidth+20,y+10+30*2);
 
     var i = 1;
 
@@ -472,16 +499,16 @@ const matchButtonsOnClick = function(event) {
         'HomeOdds': ['Home odds', 20],
         'DrawOdds': ['Draw odds', 20],
         'AwayOdds': ['Away odds', 20],
-        'T_GoalsFor_H': ['H team, av goals scored', 10],
-        'T_GoalsAg_H': ['H team, av goals conceded', 10],
-        'T_GoalsFor_A': ['A team, av goals scored', 10],
-        'T_GoalsAg_A': ['A team, av goals conceded', 10],
-        'T_Points_H': ['H team, av points per game', 3],
-        'T_Points_A': ['A team, av points per game', 3],
-        'L3M_Points_H': ['H team, av points last 3 games', 3],
-        'L3M_Points_A': ['A team, av points last 3 games', 3],
-        'T_TablePosition_H': ['H team, Table position', 1],
-        'T_TablePosition_A': ['A team, Table position', 1]
+        'T_GoalsFor_H': ['Goals + (H)', 10],
+        'T_GoalsAg_H': ['Goals - (H)', 10],
+        'T_GoalsFor_A': ['Goals + (A)', 10],
+        'T_GoalsAg_A': ['Goals - (A)', 10],
+        'T_Points_H': ['Pts average (H)', 3],
+        'T_Points_A': ['Pts average (A)', 3],
+        'L3M_Points_H': ['Pts in last 3 (H)', 3],
+        'L3M_Points_A': ['Pts in last 3 (A)', 3],
+        'T_TablePosition_H': ['Table position (H)', 1],
+        'T_TablePosition_A': ['Table position (A)', 1]
     }
 
 
@@ -497,9 +524,9 @@ const matchButtonsOnClick = function(event) {
         var valToFill = Math.round(chartStats[feature][0]*chartStatsConvert[feature][1]*100)/100;
 
         canvas.textAlign = "end";
-        canvas.fillText(textToFill,225,y+11);
+        canvas.fillText(textToFill,135,y+11);
         canvas.textAlign = "start";
-        canvas.fillText(valToFill,230,y+11);
+        canvas.fillText(valToFill,140,y+11);
 
         i++;
     };
@@ -508,6 +535,14 @@ const matchButtonsOnClick = function(event) {
 
 document.getElementById('escButton').addEventListener('click', () => {
     $('#predictionTab').hide();
+    $('#backButtonUnderPredictionsTab').hide();
+    $('#resultsMenu').show();    
+});
+
+document.getElementById('backButtonUnderPredictionsTab').addEventListener('click', () => {
+    $('#predictionTab').hide();
+    $('#backButtonUnderPredictionsTab').hide();
+    $('#resultsMenu').show();    
 });
 
 document.getElementById('howDoIReadThisButton').addEventListener('click', () => {
