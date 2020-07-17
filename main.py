@@ -11,9 +11,9 @@ from update import updatePredictions
 from aws import downloadFileAWS
 
 # AWS access
-AWS_ACCESS_KEY_ID = 'AKIAIDGSP4IVPNH4W7BQ'
-AWS_SECRET_ACCESS_KEY = '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'
-BUCKET_NAME = 'football-prediction-web-app'
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+BUCKET_NAME = os.environ.get('S3_BUCKET')
 fpath = "static/predicted.txt"
 
 downloadFileAWS(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, BUCKET_NAME, fpath)
