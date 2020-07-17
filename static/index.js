@@ -413,7 +413,7 @@ const matchButtonsOnClick = function(event) {
 
     // DRAWING OF THE CHART
 
-    const chartWidth = 150;
+    const chartWidth = 130;
     const chartHeight = 500;
 
     var chartStats = {
