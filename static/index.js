@@ -34,7 +34,12 @@ function isMobileDevice() {
     return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 };
 
-const mobileFlag = isMobileDevice();
+var mobileFlag = isMobileDevice();
+
+// if iPad, change mobileFlag = false;
+if (window.navigator.userAgent.search('iPad') != -1){
+    mobileFlag = false;
+};
 
 function onlyUnique(value, index, self) { 
     return self.indexOf(value) === index;
