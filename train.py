@@ -21,8 +21,12 @@ leagues = [
     'D1',
     'I1',
     'SP1',
-    'F1'
+    'F1',
+    'E1',
+    'P1',
+    'N1'
 ]
+
 
 def train(leagues):
 
@@ -118,7 +122,6 @@ def predict(leagues):
         for i in tmp.index:
 
             gameId = str(i)+'_'+league
-            # gameId = int(i)
 
             out[gameId] = {}
             for j, col in enumerate(tmp.columns.values[1:]):
@@ -136,9 +139,6 @@ def predict(leagues):
                     
                 if type(val) == pd.Timestamp:
                     val = str(val)
-
-                # if type(val) == np.nan:
-                #     val = ''
                     
                 out[gameId][col] = val
     

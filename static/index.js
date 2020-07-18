@@ -64,12 +64,19 @@ const teamNameChange = {
     'Werder Bremen':'Werder',
     'Ein Frankfurt': 'Eintracht',
     'Leverkusen': 'Bayer 04',
-    'Crystal Palace':'C Palace',
+    'Crystal Palace':'C. Palace',
     'Sheffield United':'Sheffield',
     'Bournemouth':"B'mouth",
-    'Southampton':"Soton",
+    'Southampton':"So'ton",
     'Tottenham': 'Spurs',
-    'Man United': 'Man Utd'
+    'Man United': 'Man Utd',
+    'Sheffield Weds': 'Sheff. Weds',
+    'Huddersfield': "Hud'field",
+    'Middlesbrough': "M'brough",
+    'PSV Eindhoven': 'PSV',
+    'Sparta Rotterdam': 'Sparta R',
+    'Pacos Ferreira': 'Pacos F',
+    'Santa Clara': 'Santa C'
 };
 
 var loadMatches = function (json, league) {
@@ -104,7 +111,7 @@ var loadMatches = function (json, league) {
         sumReturnDate[matchDates[i]] = 0;
 
         var dateSplit = matchDates[i].split('-');
-        var dateDisplay = dateSplit[2] + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0];
+        var dateDisplay = parseInt(dateSplit[2]) + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0];
 
         var textnode = document.createElement('span');
         textnode.innerHTML = dateDisplay;
@@ -157,6 +164,7 @@ var loadMatches = function (json, league) {
         resultColorSpan.classList.add('resultColorSpan');
         resultColorSpan.style.backgroundColor = '#eeff90';
         resultColorSpan.style.color = '#eeff90';
+        resultColorSpan.id = 'game:' + i.toString();
 
         // returns tab
 
@@ -356,7 +364,7 @@ const matchButtonsOnClick = function(event) {
     $('#predictionTabPred').css('color',colorPred);
 
     var dateSplit = gameStats['Date'].split(' ')[0].split('-');
-    var dateDisplay = dateSplit[2] + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0];
+    var dateDisplay = parseInt(dateSplit[2]) + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0];
 
     var hTeam = gameStats['HomeTeam'];
     var aTeam = gameStats['AwayTeam'];

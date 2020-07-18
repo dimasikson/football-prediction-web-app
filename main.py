@@ -42,7 +42,10 @@ leagues = {
     'D1': 6,
     'I1': 5,
     'SP1': 5,
-    'F1': 5
+    'F1': 5,
+    'E1': 5,
+    'P1': 17,
+    'N1': 17
 }
 
 @app.route('/', methods=['POST','GET'])

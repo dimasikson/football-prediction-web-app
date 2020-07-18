@@ -182,7 +182,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
             for row in range(len(df)):
 
-                if row % 10 == 0:
+                if row % 50 == 0:
                     print(row)
 
                 HTeam = df['HomeTeam'].iloc[row]
