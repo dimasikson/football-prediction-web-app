@@ -6,7 +6,7 @@
 
 This is a web app that helps to visualize football predictions and how each input variable affects the output. Below is an example of a match report. Each bar represents the marginal contribution of the corresponding variable on the output.
 
-![alt text](https://gyazo.com/a29cdca94b617367f1dd41bd3d8b8d10.png)
+![](https://i.gyazo.com/2bcf9cb856ce2934332b48c9cdc708da.png)
 
 ## 2. The 'how?'
 
