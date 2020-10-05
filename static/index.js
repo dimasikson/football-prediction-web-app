@@ -3,6 +3,7 @@
 
 $('#predictionTab').hide();
 $('#backButtonUnderPredictionsTab').hide();
+$('#howDoIReadThisButton').hide();
 
 var league = 'E0';
 // E0
@@ -59,8 +60,6 @@ const monthsConvert = {
     '11': 'Nov',
     '12': 'Dec'
 }
-
-var canvas = document.getElementById("chartCanvas").getContext('2d');
 
 const teamNameChange = {
     'Fortuna Dusseldorf':'Fortuna',
@@ -424,10 +423,7 @@ const matchButtonsOnClick = function(event) {
 
     }
 
-    // DRAWING OF THE CHART
-
-    const chartWidth = 130;
-    const chartHeight = 500;
+    // DRAWING THE CHART
 
     var chartStats = {
         'HomeOdds': [],
@@ -445,7 +441,6 @@ const matchButtonsOnClick = function(event) {
         'T_TablePosition_A': []
     }
 
-    // var chartYs = [];
     var chartXs = [gameStats['intercept']*10];
 
     for (var feature in chartStats){
@@ -454,59 +449,6 @@ const matchButtonsOnClick = function(event) {
 
         chartXs.push(gameStats['shap_'+feature]*10);
     }
-
-    for (var i = 1; i < chartXs.length; i++){
-        chartXs[i] = chartXs[i] + chartXs[i-1]
-    };
-
-    var minXs = Math.min(...chartXs);
-    var maxXs = Math.max(...chartXs);
-
-    canvas.fillStyle = '#2f363b';
-    canvas.clearRect(0, 0, chartWidth+1000, chartHeight);
-
-    for (var i = 0; i < chartXs.length; i++){
-        chartXs[i] = (chartXs[i] - minXs) / (maxXs - minXs)
-
-        // draw on canvas
-
-        var y = i*25;
-
-        var changeX = chartXs[i]*chartWidth - chartXs[i-1]*chartWidth;
-
-        if (changeX >= 0){
-            canvas.fillStyle = '#74bbfb';
-        } else {
-            canvas.fillStyle = '#fd3772';
-        };
-
-        canvas.fillRect(150+50+chartXs[i-1]*chartWidth,y,changeX,10);
-
-        // if ( i > 1 ){
-        //     canvas.fillStyle = '#000000';
-        //     canvas.fillRect(chartXs[i-1]*chartWidth,y-25+10,1,25-10);
-        // }
-
-    };
-
-    canvas.fillStyle = '#000000';
-
-    canvas.fillRect(150+50+chartXs[0]*chartWidth,20,1,chartHeight)
-
-    canvas.beginPath();
-    canvas.setLineDash([5, 15]);
-    canvas.moveTo(150+50+chartXs[chartXs.length-1]*chartWidth,20);
-    canvas.lineTo(150+50+chartXs[chartXs.length-1]*chartWidth+1,20+chartHeight);
-    canvas.stroke();
-
-    canvas.fillStyle = '#000000';
-    canvas.font = "20px sans-serif";
-
-    canvas.textAlign = 'end';
-    canvas.fillText('Intercept: '+Math.round(gameStats['intercept']*1000)/100,150+chartXs[0]*chartWidth+20,y+10+30);
-    canvas.fillText('Prediction: '+Math.round(gameStats['preds']*1000)/100,150+chartXs[chartXs.length-1]*chartWidth+20,y+10+30*2);
-
-    var i = 1;
 
     var chartStatsConvert = {
         'HomeOdds': ['Home odds', 20],
@@ -524,25 +466,13 @@ const matchButtonsOnClick = function(event) {
         'T_TablePosition_A': ['Table position (A)', 1]
     }
 
-
-    for (var feature in chartStats){
-
-        var y = i*25;
-        
-        // canvas.fillStyle = '#000000';
-        canvas.fillStyle = '#ffffff';
-        canvas.font = "15px sans-serif";
-
-        var textToFill = chartStatsConvert[feature][0] + ': ';
-        var valToFill = Math.round(chartStats[feature][0]*chartStatsConvert[feature][1]*100)/100;
-
-        canvas.textAlign = "end";
-        canvas.fillText(textToFill,135,y+11);
-        canvas.textAlign = "start";
-        canvas.fillText(valToFill,140,y+11);
-
-        i++;
+    var chartYs = ['Intercept'];
+    
+    for (k in chartStatsConvert){
+        chartYs.push(`${chartStatsConvert[k][0]}: ${Math.round(chartStats[k][0]*chartStatsConvert[k][1]*100)/100}`);
     };
+
+    make1DPlot(chartXs, chartYs, 'chartCanvas');
 
 };
 
@@ -631,4 +561,75 @@ $(document).ready(function(){
     );
 
 });
+
+// #######################    plots    ##################################
+
+const plotMargin = 30;
+const plotMarginLeft = 150;
+
+const plotColor = '#2f363b';
+
+function make1DPlot(xArray, yArray, targetDiv){
+
+    var trace1 = {
+        x: xArray,
+        y: yArray,
+        type: "waterfall",
+        orientation: 'h',
+        decreasing: { marker: { color: "#ff8181"} },
+        increasing: { marker: { color: "#51ff94"} },
+        connector: {
+            mode: "between",
+            line: {
+                width: 0,
+                color: "rgb(0, 0, 0)",
+                dash: 0
+            }
+        }
+    };
+    
+    var plotData = [trace1];
+
+    var layout = {
+        margin: {
+            l: plotMarginLeft,
+            r: plotMargin,
+            b: plotMargin,
+            t: plotMargin
+        },
+        title: {
+            text:'XGBoost model, SHAP local explanation',
+            font: {
+                color: '#ffffff'
+            }
+        },
+        xaxis:{
+            title: {
+                text: 'Predicted goal difference',
+                font: {
+                    color: '#ffffff',
+                    size: 12
+                }
+            },
+            tickfont: {
+                family: 'sans-serif',
+                color: '#ffffff'
+            }
+        },
+        yaxis:{
+            autorange:'reversed',
+            automargin: true,            
+            tickfont: {
+                family: 'sans-serif',
+                size: 14,
+                color: '#ffffff'
+            }
+        },
+        plot_bgcolor: plotColor,
+        paper_bgcolor: plotColor
+    };
+
+    Plotly.newPlot(targetDiv, plotData, layout);
+
+};
 

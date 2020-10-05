@@ -111,6 +111,7 @@
                 border-radius: 5px; 
                 border: 0px solid #36454f; 
                 background-color: #36454f; 
+                /* background-color: #51ff94;  */
                 color: white;
             }
 
@@ -136,6 +137,7 @@
         <!-- <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script> -->
         <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
         <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
         <div id='darkBackground' class='darkBackground'></div>
         <div id='howDoIReadThisTab' class='howDoIReadThisTab'> 
@@ -216,7 +218,7 @@
             
                 <div style="padding-left: 10px; color: white; font-size: large; height: 50px; margin: 5px;" id='predictionTabTeams'>
                     <span style='float: left; font-size: large;' id='predictionTabTeamNames'></span>
-                    <button class="topButton" id='escButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;">x</button>
+                    <button class="topButton" id='escButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;"> Close </button>
                     <button class="topButton" id='howDoIReadThisButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;">
                         How to read this?
                     </button>
@@ -232,9 +234,9 @@
 
                 </div>
 
-                <div style="margin-top: 30px; margin-left: 0px; color: lightgrey; border: 0px solid #36454f; border-radius: 5px; padding: 10px;"> XGBoost model, SHAP local explanation: 
-                    <canvas id="chartCanvas" height="420" width="340" style="margin: 20px; margin-top: 0px; margin-bottom: 0px;">
-                    </canvas>
+                <div style="margin-top: 30px; margin-left: 0px; color: lightgrey; border: 0px solid #36454f; border-radius: 5px;">
+                    <div id="chartCanvas" style="height: 420; width: 340;">
+                    </div>
                 </div>
 
                 <div class="matchMenu" id="backButtonUnderPredictionsTab" style="background-color: #36454f; width: 95%; margin: 0 auto; font-size: x-large;">

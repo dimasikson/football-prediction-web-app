@@ -4,8 +4,8 @@ from aws import uploadFileAWS
 import os
 
 firstSeason = 0
-firstSeasonTest = 19
-lastSeason = 19
+firstSeasonTest = 20
+lastSeason = 20
 
 leagues = {
     'E0': 5,
@@ -58,7 +58,7 @@ def updatePredictions(download, preprocess, predictYN, leagues, firstSeason, fir
 #     firstSeason=firstSeason, 
 #     firstSeasonTest=firstSeasonTest, 
 #     lastSeason=lastSeason, 
-#     train=False
+#     train=True
 # )
 
 

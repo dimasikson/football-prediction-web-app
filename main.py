@@ -22,8 +22,8 @@ app = Flask(__name__)
 scheduler = APScheduler()
 
 firstSeason = 0
-firstSeasonTest = 19
-lastSeason = 19
+firstSeasonTest = 20
+lastSeason = 20
 
 def updatePredictionsRef(): 
     updatePredictions(

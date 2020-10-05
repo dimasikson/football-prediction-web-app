@@ -37,9 +37,14 @@ def train(leagues):
         df.loc[:, 'Date'] = cleanDate(df.loc[:, 'Date'])
         df = df.loc[(df['T_GamesPlayed_H'] >= 3) & (df['T_GamesPlayed_A'] >= 3)]
 
-        cols = list(range(15,18))+list(range(22,26))+list(range(34,38))+list(range(60,62))
-        
-        X_train = df.iloc[:,cols]
+        cols = [
+            'HomeOdds','DrawOdds','AwayOdds',
+            'T_GoalsFor_H','T_GoalsAg_H','T_GoalsFor_A','T_GoalsAg_A',
+            'T_Points_H','T_Points_A','T_TablePosition_H','T_TablePosition_A',
+            'L3M_Points_H','L3M_Points_A'
+        ]
+
+        X_train = df.loc[:,cols]
         y_train = df.loc[:, 'GoalsFor_H'] - df.loc[:, 'GoalsFor_A']
 
         param = {
@@ -79,6 +84,8 @@ def predict(leagues):
 
     for league in leagues:
 
+        print(league)
+
         df = pd.read_csv(f'processedData/test_{league}.csv', engine='python')
 
         file_name = f"models/model_{league}.pkl"
@@ -91,10 +98,18 @@ def predict(leagues):
 
         df = df.fillna(0)
 
-        cols = list(range(15,18))+list(range(22,26))+list(range(34,38))+list(range(60,62))
+        cols = [
+            'HomeOdds','DrawOdds','AwayOdds',
+            'T_GoalsFor_H','T_GoalsAg_H','T_GoalsFor_A','T_GoalsAg_A',
+            'T_Points_H','T_Points_A','T_TablePosition_H','T_TablePosition_A',
+            'L3M_Points_H','L3M_Points_A'
+        ]
         
-        X_test = df.iloc[:,cols]
+        X_test = df.loc[:, cols]
         y_test = df.loc[:, 'GoalsFor_H'] - df.loc[:, 'GoalsFor_A']
+
+        if len(X_test) == 0:
+            continue
 
         features = X_test.columns.values
 
