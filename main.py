@@ -44,7 +44,7 @@ def index():
 @app.route('/refreshData', methods=['POST','GET'])
 def indexRefresh():
     updatePredictions(
-        download=False, 
+        download=True, 
         preprocess=True, 
         predictYN=True, 
         leagues=leagues,
