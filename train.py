@@ -12,9 +12,7 @@ import datetime
 import time
 import json
 
-from utils import cleanDate
-
-print(xgb.__version__)
+from utils import cleanDate, loadDf, printResults
 
 leagues = [
     'E0',
@@ -32,50 +30,39 @@ def train(leagues):
 
     for league in leagues:
 
-        df = pd.read_csv(f'processedData/train_{league}.csv', engine='python')
+        X_train, y_train, _ = loadDf(f'processedData/train_{league}.csv', shuffle_yn=True)
+        X_test, y_test, _ = loadDf(f'processedData/test_{league}.csv', shuffle_yn=False)
 
-        df.loc[:, 'Date'] = cleanDate(df.loc[:, 'Date'])
-        df = df.loc[(df['T_GamesPlayed_H'] >= 3) & (df['T_GamesPlayed_A'] >= 3)]
-
-        cols = [
-            'HomeOdds','DrawOdds','AwayOdds',
-            'T_GoalsFor_H','T_GoalsAg_H','T_GoalsFor_A','T_GoalsAg_A',
-            'T_Points_H','T_Points_A','T_TablePosition_H','T_TablePosition_A',
-            'L3M_Points_H','L3M_Points_A'
-        ]
-
-        X_train = df.loc[:,cols]
-        y_train = df.loc[:, 'GoalsFor_H'] - df.loc[:, 'GoalsFor_A']
+        num_round = 200
+        features = X_train.columns.values
 
         param = {
             'objective': 'reg:squarederror',
-            'eta': 0.2
+            'eta': 0.2,
+            'scale_pos_weight': (y_train.size - y_train.sum()) / y_train.sum()
         }
 
-        num_round = 20
+        xg_train = xgb.DMatrix(X_train.values, feature_names = features, label = y_train.values)
+        xg_test = xgb.DMatrix(X_test.values, feature_names = features, label = y_test.values)
 
-        param['scale_pos_weight']= (y_train.size - y_train.sum()) / y_train.sum()
-
-        features = X_train.columns.values
-
-        xg_train = xgb.DMatrix(
-            X_train.values, feature_names = features, label = y_train.values
-        )
-
-        watchlist = [(xg_train, 'train')]
+        watchlist = [
+            (xg_train, 'train'),
+            (xg_test, 'test'),
+        ]
+        
         reg = xgb.train(
-            param, xg_train, num_round, watchlist, verbose_eval=True
+            param, 
+            xg_train, 
+            num_round, 
+            watchlist,
+            verbose_eval=True, 
+            early_stopping_rounds=10
         )
-
-        file_name = f"models/model_{league}.pkl"
 
         # save
+        file_name = f"models/model_{league}.pkl"
         pickle.dump(reg, open(file_name, "wb"))
-
-        print('done')
-
-
-# train(leagues)
+        print(f'{league} done')
 
 
 def predict(leagues):
@@ -83,33 +70,14 @@ def predict(leagues):
     out = {}
 
     for league in leagues:
-
         print(league)
 
-        df = pd.read_csv(f'processedData/test_{league}.csv', engine='python')
-
-        file_name = f"models/model_{league}.pkl"
-
-        # load
-        xgb_model_loaded = pickle.load(open(file_name, "rb"))
-
-        df.loc[:, 'Date'] = cleanDate(df.loc[:, 'Date'])
-        df = df.loc[(df['T_GamesPlayed_H'] >= 3) & (df['T_GamesPlayed_A'] >= 3)]
-
-        df = df.fillna(0)
-
-        cols = [
-            'HomeOdds','DrawOdds','AwayOdds',
-            'T_GoalsFor_H','T_GoalsAg_H','T_GoalsFor_A','T_GoalsAg_A',
-            'T_Points_H','T_Points_A','T_TablePosition_H','T_TablePosition_A',
-            'L3M_Points_H','L3M_Points_A'
-        ]
-        
-        X_test = df.loc[:, cols]
-        y_test = df.loc[:, 'GoalsFor_H'] - df.loc[:, 'GoalsFor_A']
-
+        X_test, y_test, test = loadDf(f'processedData/test_{league}.csv', shuffle_yn=False)
         if len(X_test) == 0:
             continue
+
+        file_name = f"models/model_{league}.pkl"
+        xgb_model_loaded = pickle.load(open(file_name, "rb"))
 
         features = X_test.columns.values
 
@@ -120,27 +88,22 @@ def predict(leagues):
         explainer = shap.TreeExplainer(xgb_model_loaded)
         shap_values = explainer.shap_values(X_test)
 
-        test = df
-
         for i, f in enumerate(features):
             cname = 'shap_'+f
-            
             test.loc[:, cname] = shap_values[:, i]
     
         test.loc[:, 'intercept'] = explainer.expected_value
         test.loc[:, 'preds'] = xgb_model_loaded.predict(xg_test)
 
         maxDt = max(test.loc[:, 'Date']) + pd.DateOffset(1-7*52)
-
         tmp = test.loc[test.loc[:, 'Date']>=maxDt, :]
 
         for i in tmp.index:
 
-            gameId = str(i)+'_'+league
-
+            gameId = f'{i}_{league}'
             out[gameId] = {}
+
             for j, col in enumerate(tmp.columns.values[1:]):
-                
                 val = tmp.loc[i][j+1]
 
                 if type(val) == np.int64:
@@ -156,9 +119,13 @@ def predict(leagues):
                     val = str(val)
                     
                 out[gameId][col] = val
+
+        # print performance (accuracy, ROI)
+        printResults(tmp, league)
     
     with open(f'static/predicted.txt', 'w') as outfile:
         json.dump(out, outfile)
 
 
+# train(leagues)
 # predict(leagues)

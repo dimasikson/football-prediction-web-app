@@ -35,6 +35,7 @@ def updatePredictions(download, preprocess, predictYN, leagues, firstSeason, fir
             train=train, 
             leagues=leagues
         )
+        print('Files downloaded!')
 
     if preprocess:
         preProcess(
@@ -44,10 +45,14 @@ def updatePredictions(download, preprocess, predictYN, leagues, firstSeason, fir
             train=train, 
             leagues=leagues
         )
+        print('Preprocessing done!')
 
     if predictYN:
         predict(leagues=leagues)
+        print('Predictions done!')
+
         uploadFileAWS(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, BUCKET_NAME, fpath)
+        print('Uploaded to AWS!')
 
 
 # updatePredictions(

@@ -89,9 +89,10 @@ var loadMatches = function (json, league) {
 
     for (var i in json){
 
-        if (json[i]['Div'] == league){
+        if (json[i]['Div'] == league || league == 'W0'){
             jsonFilteredGames[i] = json[i]
         };
+
     };
 
     var matchDates = [];
@@ -100,7 +101,9 @@ var loadMatches = function (json, league) {
         matchDates.push(jsonFilteredGames[i]['Date'].split(' ')[0]);
     };
 
-    matchDates = matchDates.filter(onlyUnique).reverse();
+    matchDates = matchDates.filter(onlyUnique);
+    matchDates.sort()
+    matchDates.reverse();
 
     document.getElementById("resultsMenuGames").innerHTML = '';
 
@@ -433,12 +436,18 @@ const matchButtonsOnClick = function(event) {
         'T_GoalsAg_H': [],
         'T_GoalsFor_A': [],
         'T_GoalsAg_A': [],
+        'T_Conversion_H': [],
+        'T_Conversion_A': [],
+        'T_Accuracy_H': [],
+        'T_Accuracy_A': [],
         'T_Points_H': [],
         'T_Points_A': [],
         'L3M_Points_H': [],
         'L3M_Points_A': [],
         'T_TablePosition_H': [],
-        'T_TablePosition_A': []
+        'T_TablePosition_A': [],
+        'T_Variance_H': [],
+        'T_Variance_A': []
     }
 
     var chartXs = [gameStats['intercept']*10];
@@ -458,12 +467,18 @@ const matchButtonsOnClick = function(event) {
         'T_GoalsAg_H': ['Goals - (H)', 10],
         'T_GoalsFor_A': ['Goals + (A)', 10],
         'T_GoalsAg_A': ['Goals - (A)', 10],
+        'T_Conversion_H': ['Conversion (H)', 1],
+        'T_Conversion_A': ['Conversion (H)', 1],
+        'T_Accuracy_H': ['Accuracy (H)', 1],
+        'T_Accuracy_A': ['Accuracy (H)', 1],
         'T_Points_H': ['Pts average (H)', 3],
         'T_Points_A': ['Pts average (A)', 3],
         'L3M_Points_H': ['Pts in last 3 (H)', 3],
         'L3M_Points_A': ['Pts in last 3 (A)', 3],
         'T_TablePosition_H': ['Table position (H)', 1],
-        'T_TablePosition_A': ['Table position (A)', 1]
+        'T_TablePosition_A': ['Table position (A)', 1],
+        'T_Variance_H': ['Variance (H)', 1],
+        'T_Variance_A': ['Variance (A)', 1]
     }
 
     var chartYs = ['Intercept'];
@@ -626,7 +641,8 @@ function make1DPlot(xArray, yArray, targetDiv){
             }
         },
         plot_bgcolor: plotColor,
-        paper_bgcolor: plotColor
+        paper_bgcolor: plotColor,
+        height: 500
     };
 
     Plotly.newPlot(targetDiv, plotData, layout);

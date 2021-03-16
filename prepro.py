@@ -78,20 +78,17 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
             if i >= firstSeasonTest:
                 folder = 'test'
-
             else:
                 folder = 'train'
 
             fpath = f'rawFiles/{folder}/{filename}.csv'
-
             df = pd.read_csv(fpath, engine='python')
 
             if i == lastSeason:
+
                 # read fixtures
                 fixtures = pd.read_csv('rawFiles/test/fixtures.csv', engine='python')
-
                 fixtures = fixtures.loc[fixtures.loc[:, 'Div']==league, :]
-
                 fixtures.index = range(len(fixtures))
 
                 for row in range(len(fixtures)):
@@ -150,7 +147,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
             tableColumns = [
                 # main table
                 'T_GoalsFor', 'T_GoalsAg','T_GoalsForHT', 'T_GoalsAgHT','T_ShotsTaken', 'T_ShotsFaced','T_TShotsTaken', 'T_TShotsFaced',
-                'T_Points','T_GamesPlayed','T_GoalDif','T_VAR'
+                'T_Points','T_GamesPlayed','T_GoalDif','T_Variance'
             ]
 
             teams = df.loc[:, 'HomeTeam'].append(df.loc[:, 'AwayTeam'])
@@ -174,7 +171,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 'T_Points_H','T_Points_A',
                 'T_TablePosition_H','T_TablePosition_A',
                 'T_GoalsForHT_H','T_GoalsAgHT_H','T_GoalsForHT_A','T_GoalsAgHT_A',
-                'T_VAR_H','T_VAR_A',
+                'T_Variance_H','T_Variance_A',
                 'L3M_Points_H', 'L3M_Points_A'
             ]
 
@@ -185,9 +182,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
             qPoints = {j: [] for j in teams.unique().tolist()}
 
-            for row in range(len(df)):
-
-                tempDfRow = df.iloc[row]
+            for _, tempDfRow in df.iterrows():
                 tempDfRow = {k:v for k, v in zip(tempDfRow.index, tempDfRow)}
                 HTeam = tempDfRow['HomeTeam']
                 ATeam = tempDfRow['AwayTeam']
@@ -198,7 +193,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 # update df for home team
                 if tempTableHome['T_GamesPlayed'] > 0:
 
-                    cols = ['GoalsFor', 'GoalsAg', 'GoalsForHT', 'GoalsAgHT', 'ShotsTaken', 'TShotsTaken', 'ShotsFaced', 'TShotsFaced', 'Points', 'VAR']
+                    cols = ['GoalsFor', 'GoalsAg', 'GoalsForHT', 'GoalsAgHT', 'ShotsTaken', 'TShotsTaken', 'ShotsFaced', 'TShotsFaced', 'Points', 'Variance']
                     for col in cols:
                         computedVals['T_' + col + '_H'].append(tempTableHome['T_' + col] / tempTableHome['T_GamesPlayed'])
 
@@ -206,7 +201,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                     for col in cols:
                         computedVals['T_' + col + '_H'].append(tempTableHome['T_' + col])
                 else:
-                    cols = ['GoalsFor', 'GoalsAg', 'GoalsForHT', 'GoalsAgHT', 'ShotsTaken', 'TShotsTaken', 'ShotsFaced', 'TShotsFaced', 'Points', 'VAR', 'TablePosition']
+                    cols = ['GoalsFor', 'GoalsAg', 'GoalsForHT', 'GoalsAgHT', 'ShotsTaken', 'TShotsTaken', 'ShotsFaced', 'TShotsFaced', 'Points', 'Variance', 'TablePosition']
                     for col in cols:
                         computedVals['T_' + col + '_H'].append(None)
 
@@ -215,7 +210,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 # update df for away team
                 if tempTableAway['T_GamesPlayed'] > 0:
 
-                    cols = ['GoalsFor', 'GoalsAg', 'GoalsForHT', 'GoalsAgHT', 'ShotsTaken', 'TShotsTaken', 'ShotsFaced', 'TShotsFaced', 'Points', 'VAR']
+                    cols = ['GoalsFor', 'GoalsAg', 'GoalsForHT', 'GoalsAgHT', 'ShotsTaken', 'TShotsTaken', 'ShotsFaced', 'TShotsFaced', 'Points', 'Variance']
                     for col in cols:
                         computedVals['T_' + col + '_A'].append(tempTableAway['T_' + col] / tempTableAway['T_GamesPlayed'])
 
@@ -223,7 +218,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                     for col in cols:
                         computedVals['T_' + col + '_A'].append(tempTableAway['T_' + col])
                 else:
-                    cols = ['GoalsFor', 'GoalsAg', 'GoalsForHT', 'GoalsAgHT', 'ShotsTaken', 'TShotsTaken', 'ShotsFaced', 'TShotsFaced', 'Points', 'VAR', 'TablePosition']
+                    cols = ['GoalsFor', 'GoalsAg', 'GoalsForHT', 'GoalsAgHT', 'ShotsTaken', 'TShotsTaken', 'ShotsFaced', 'TShotsFaced', 'Points', 'Variance', 'TablePosition']
                     for col in cols:
                         computedVals['T_' + col + '_A'].append(None)
 
@@ -236,6 +231,17 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 else:
                     computedVals['L3M_Points_H'].append(None)
                     computedVals['L3M_Points_A'].append(None)
+
+                # calculate variance of result
+                hBin = 1 if tempDfRow['FTR'] == 'H' else 0
+                dBin = 1 if tempDfRow['FTR'] == 'D' else 0
+                aBin = 1 if tempDfRow['FTR'] == 'A' else 0
+
+                hVariance = hBin - 1 / ( tempDfRow['HomeOdds'] * 20 )
+                dVariance = dBin - 1 / ( tempDfRow['DrawOdds'] * 20 )
+                aVariance = aBin - 1 / ( tempDfRow['AwayOdds'] * 20 )
+
+                resultVariance = ( hVariance ** 2 + dVariance ** 2 + aVariance ** 2 ) / 3
 
                 # update table for home team
                 tempTableHome['T_GamesPlayed'] += 1
@@ -250,6 +256,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
                 tempTableHome['T_GoalsForHT'] += tempDfRow['GoalsForHT_H']
                 tempTableHome['T_GoalsAgHT'] += tempDfRow['GoalsForHT_A']
+                tempTableHome['T_Variance'] += resultVariance
 
                 # update table for away team
                 tempTableAway['T_GamesPlayed'] += 1
@@ -264,6 +271,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
                 tempTableAway['T_GoalsForHT'] += tempDfRow['GoalsForHT_A']
                 tempTableAway['T_GoalsAgHT'] += tempDfRow['GoalsForHT_H']
+                tempTableAway['T_Variance'] += resultVariance
 
                 # update qPoints
                 qPoints[HTeam].append(tempDfRow['Points_H'])
@@ -278,9 +286,9 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                     table[team]['T_GoalDif'] = table[team]['T_GoalsFor'] - table[team]['T_GoalsAg']
 
                 sortedTeams = sorted(table, key = lambda k: (
-                    float('inf') - table[k]['T_Points'], # inf - val to make it descending order
-                    float('inf') - table[k]['T_GoalDif'], 
-                    float('inf') - table[k]['T_GoalsFor'], 
+                    -table[k]['T_Points'], # negative for descending order
+                    -table[k]['T_GoalDif'], 
+                    -table[k]['T_GoalsFor'], 
                     table[k]['Team']
                 ))
 
@@ -289,6 +297,14 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
             for k, v in computedVals.items():
                 df.loc[:, k] = v
+
+            # additional features
+            for ha in ['H', 'A']:
+                df.loc[:, f'T_Conversion_{ha}'] = df.loc[:, f'T_GoalsFor_{ha}'] / df.loc[:, f'T_TShotsTaken_{ha}']
+                df.loc[:, f'T_Accuracy_{ha}'] = df.loc[:, f'T_TShotsTaken_{ha}'] / df.loc[:, f'T_ShotsTaken_{ha}']
+
+                df.loc[:, f'T_Conversion_{ha}'] = np.clip(df.loc[:, f'T_Conversion_{ha}'],0,1)
+                df.loc[:, f'T_Accuracy_{ha}'] = np.clip(df.loc[:, f'T_Accuracy_{ha}'],0,1)
 
             if i < firstSeasonTest:
                 if trainDfNone:

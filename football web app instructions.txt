@@ -1,0 +1,9 @@
+Football prediction web app TODO's:
+
+- Host on Azure
+	- set up the $150/m credits
+	- move storage to Azure, no-SQL database for predicted.txt
+	- schedule data refresh on azure
+
+- update README
+	- add feature glossary
