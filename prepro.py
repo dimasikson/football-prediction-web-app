@@ -103,9 +103,9 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
             if i >= 19:
                 df = df.rename(columns={
-                    'AvgH': 'BbAvH', 
-                    'AvgD': 'BbAvD', 
-                    'AvgA': 'BbAvA'
+                    'MaxH': 'BbMxH', 
+                    'MaxD': 'BbMxD', 
+                    'MaxA': 'BbMxA'
                 })
 
             df = df[[
@@ -117,7 +117,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 'FTR', 'HTR',
                 'HS', 'AS',
                 'HST', 'AST',
-                'BbAvH', 'BbAvD', 'BbAvA'
+                'BbMxH', 'BbMxD', 'BbMxA'
                 ]]
 
             df.columns = [
