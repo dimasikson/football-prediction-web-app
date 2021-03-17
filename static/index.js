@@ -49,22 +49,23 @@ const teamNameChange = {
 
 // #######################    load predicted.txt    ##################################
 
-var json = (function () {
-    var json = null;
+var json = null;
+function loadJSON() {
     $.ajax({
         'type': 'GET',
         'async': false,
         'global': false,
         'url': fname,
         'dataType': "text",
+        'cache': false,
         'success': function (data) {
             json = data;
         }
     });
-    return json;
-})(); 
+    return JSON.parse(json);
+};
 
-json = JSON.parse(json);
+json = loadJSON();
 
 // #######################    set global mobileFlag variable    ##################################
 

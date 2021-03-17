@@ -17,7 +17,6 @@ def loadDf(fpath, shuffle_yn=False):
 
     df.loc[:, 'Date'] = cleanDate(df.loc[:, 'Date'])
     df = df.loc[(df['T_GamesPlayed_H'] >= 3) & (df['T_GamesPlayed_A'] >= 3)]
-    df = df.loc[(df['GoalsFor_H'] == df['GoalsFor_H']) & (df['GoalsFor_A'] == df['GoalsFor_A'])]
     df = df.fillna(0)
 
     if shuffle_yn:
