@@ -2,10 +2,9 @@
 import numpy as np
 import pandas as pd
 
-import xgboost as xgb
+from sklearn.ensemble import GradientBoostingRegressor
 import pickle
 import shap
-import sklearn
 
 import os
 import datetime
@@ -31,33 +30,18 @@ def train(leagues):
     for league in leagues:
 
         X_train, y_train, _ = loadDf(f'processedData/train_{league}.csv', shuffle_yn=True)
-        X_test, y_test, _ = loadDf(f'processedData/test_{league}.csv', shuffle_yn=False)
 
-        num_round = 200
-        features = X_train.columns.values
-
-        param = {
-            'objective': 'reg:squarederror',
-            'eta': 0.2,
-            'scale_pos_weight': (y_train.size - y_train.sum()) / y_train.sum()
-        }
-
-        xg_train = xgb.DMatrix(X_train.values, feature_names = features, label = y_train.values)
-        xg_test = xgb.DMatrix(X_test.values, feature_names = features, label = y_test.values)
-
-        watchlist = [
-            (xg_train, 'train'),
-            (xg_test, 'test'),
-        ]
-        
-        reg = xgb.train(
-            param, 
-            xg_train, 
-            num_round, 
-            watchlist,
-            verbose_eval=True, 
-            early_stopping_rounds=10
+        reg = GradientBoostingRegressor(
+            random_state=0,
+            n_estimators=200,
+            loss='ls',
+            learning_rate=0.1,
+            verbose=1,
+            n_iter_no_change=10,
+            max_depth=6,
         )
+        
+        reg.fit(X_train, y_train)
 
         # save
         file_name = f"models/model_{league}.pkl"
@@ -77,23 +61,17 @@ def predict(leagues):
             continue
 
         file_name = f"models/model_{league}.pkl"
-        xgb_model_loaded = pickle.load(open(file_name, "rb"))
+        gbr_model_loaded = pickle.load(open(file_name, "rb"))
 
-        features = X_test.columns.values
-
-        xg_test = xgb.DMatrix(
-            X_test.values, feature_names = features, label = y_test.values
-        )
-
-        explainer = shap.TreeExplainer(xgb_model_loaded)
+        explainer = shap.TreeExplainer(gbr_model_loaded)
         shap_values = explainer.shap_values(X_test)
 
-        for i, f in enumerate(features):
+        for i, f in enumerate(X_test.columns.values):
             cname = 'shap_'+f
             test.loc[:, cname] = shap_values[:, i]
     
         test.loc[:, 'intercept'] = explainer.expected_value
-        test.loc[:, 'preds'] = xgb_model_loaded.predict(xg_test)
+        test.loc[:, 'preds'] = gbr_model_loaded.predict(X_test)
 
         maxDt = max(test.loc[:, 'Date']) + pd.DateOffset(1-7*52)
         tmp = test.loc[test.loc[:, 'Date']>=maxDt, :]

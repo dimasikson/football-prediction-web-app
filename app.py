@@ -44,7 +44,7 @@ def index():
 @app.route('/refreshData', methods=['POST','GET'])
 def indexRefresh():
     updatePredictions(
-        download=True, 
+        download=True,
         preprocess=True, 
         predictYN=True, 
         leagues=leagues,
@@ -60,4 +60,4 @@ app.secret_key = 'SECRET KEY'
 if __name__ == "__main__":
 
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.run(debug=True,use_reloader=False)
+    app.run(debug=True, use_reloader=False)

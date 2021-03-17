@@ -6,8 +6,6 @@ import wget
 import os
 import math
 
-from hyperparams import Hyperparams as hp
-
 def downloadFiles(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
     fixtFpath = 'rawFiles/test/fixtures.csv'

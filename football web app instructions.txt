@@ -1,9 +1,8 @@
 Football prediction web app TODO's:
 
 - Host on Azure
-	- set up the $150/m credits
-	- move storage to Azure, no-SQL database for predicted.txt
-	- schedule data refresh on azure
+	- move storage to Azure, blob storage for predicted.txt
+	- set up refresh as a proper pipeline on Azure
 
 - update README
 	- add feature glossary

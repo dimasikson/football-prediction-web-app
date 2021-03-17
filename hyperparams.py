@@ -1,4 +1,0 @@
-
-class Hyperparams:
-    rawDataFpath = 'rawFiles/'
-

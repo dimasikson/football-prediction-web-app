@@ -613,7 +613,7 @@ function make1DPlot(xArray, yArray, targetDiv){
             t: plotMargin
         },
         title: {
-            text:'XGBoost model, SHAP local explanation',
+            text:'SHAP local explanation',
             font: {
                 color: '#ffffff'
             }
