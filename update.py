@@ -1,28 +1,7 @@
 from prepro import downloadFiles, preProcess
 from train import predict
-from aws import uploadFileAWS
+from storage import uploadFileAzure, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME, PREDICTED_FPATH
 import os
-
-firstSeason = 0
-firstSeasonTest = 20
-lastSeason = 20
-
-leagues = {
-    'E0': 5,
-    'D1': 6,
-    'I1': 5,
-    'SP1': 5,
-    'F1': 5,
-    'E1': 5,
-    'P1': 17,
-    'N1': 17
-}
-
-# AWS access
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-BUCKET_NAME = os.environ.get('S3_BUCKET')
-fpath = "static/predicted.txt"
 
 def updatePredictions(download, preprocess, predictYN, leagues, firstSeason, firstSeasonTest, lastSeason, train):
 
@@ -50,19 +29,7 @@ def updatePredictions(download, preprocess, predictYN, leagues, firstSeason, fir
         predict(leagues=leagues)
         print('Predictions done!')
 
-        uploadFileAWS(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, BUCKET_NAME, fpath)
-        print('Uploaded to AWS!')
-
-
-# updatePredictions(
-#     download=True, 
-#     preprocess=True, 
-#     predictYN=True, 
-#     leagues=leagues,
-#     firstSeason=firstSeason, 
-#     firstSeasonTest=firstSeasonTest, 
-#     lastSeason=lastSeason, 
-#     train=True
-# )
+        uploadFileAzure(PREDICTED_FPATH, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME)
+        print('Uploaded to Azure!')
 
 

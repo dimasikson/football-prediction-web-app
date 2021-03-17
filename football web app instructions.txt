@@ -1,8 +1,7 @@
 Football prediction web app TODO's:
 
-- Host on Azure
-	- move storage to Azure, blob storage for predicted.txt
-	- set up refresh as a proper pipeline on Azure
+- clean up index.js
+- comment all code
 
 - update README
 	- add feature glossary

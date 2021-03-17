@@ -12,18 +12,18 @@ import time
 import json
 
 from utils import cleanDate, loadDf, printResults
+from storage import PREDICTED_FPATH
 
-leagues = [
-    'E0',
-    'D1',
-    'I1',
-    'SP1',
-    'F1',
-    'E1',
-    'P1',
-    'N1'
-]
-
+leagues = {
+    'E0': 5,
+    'D1': 6,
+    'I1': 5,
+    'SP1': 5,
+    'F1': 5,
+    'E1': 5,
+    'P1': 17,
+    'N1': 17
+}
 
 def train(leagues):
 
@@ -56,7 +56,7 @@ def predict(leagues):
     for league in leagues:
         print(league)
 
-        X_test, y_test, test = loadDf(f'processedData/test_{league}.csv', shuffle_yn=False)
+        X_test, _, test = loadDf(f'processedData/test_{league}.csv', shuffle_yn=False)
         if len(X_test) == 0:
             continue
 
@@ -76,13 +76,13 @@ def predict(leagues):
         maxDt = max(test.loc[:, 'Date']) + pd.DateOffset(1-7*52)
         tmp = test.loc[test.loc[:, 'Date']>=maxDt, :]
 
-        for i in tmp.index:
+        for idx, row in tmp.iterrows():
 
-            gameId = f'{i}_{league}'
+            gameId = f'{idx}_{league}'
             out[gameId] = {}
 
-            for j, col in enumerate(tmp.columns.values[1:]):
-                val = tmp.loc[i][j+1]
+            for col in tmp.columns.values[1:]:
+                val = row[col]
 
                 if type(val) == np.int64:
                     val = int(val)
@@ -101,9 +101,9 @@ def predict(leagues):
         # print performance (accuracy, ROI)
         printResults(tmp, league)
     
-    with open(f'static/predicted.txt', 'w') as outfile:
+    with open(PREDICTED_FPATH, 'w') as outfile:
         json.dump(out, outfile)
 
 
-# train(leagues)
-# predict(leagues)
+# train(leagues.keys())
+# predict(leagues.keys())

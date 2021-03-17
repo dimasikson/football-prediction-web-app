@@ -5,46 +5,10 @@ $('#predictionTab').hide();
 $('#backButtonUnderPredictionsTab').hide();
 $('#howDoIReadThisButton').hide();
 
+// #######################    global constants    ##################################
+
 var league = 'E0';
-// E0
-// D1
-// SP1
-// I1
-// F1
-
 const fname = 'static/predicted.txt';
-
-var json = (function () {
-    var json = null;
-    $.ajax({
-        'type': 'GET',
-        'async': false,
-        'global': false,
-        'url': fname,
-        'dataType': "text",
-        'success': function (data) {
-            json = data;
-        }
-    });
-    return json;
-})(); 
-
-json = JSON.parse(json);
-
-function isMobileDevice() {
-    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
-};
-
-var mobileFlag = isMobileDevice();
-
-// if iPad, change mobileFlag = false;
-if (window.navigator.userAgent.search('iPad') != -1){
-    mobileFlag = false;
-};
-
-function onlyUnique(value, index, self) { 
-    return self.indexOf(value) === index;
-}
 
 const monthsConvert = {
     '01': 'Jan',
@@ -82,6 +46,46 @@ const teamNameChange = {
     'Pacos Ferreira': 'Pacos F',
     'Santa Clara': 'Santa C'
 };
+
+// #######################    load predicted.txt    ##################################
+
+var json = (function () {
+    var json = null;
+    $.ajax({
+        'type': 'GET',
+        'async': false,
+        'global': false,
+        'url': fname,
+        'dataType': "text",
+        'success': function (data) {
+            json = data;
+        }
+    });
+    return json;
+})(); 
+
+json = JSON.parse(json);
+
+// #######################    set global mobileFlag variable    ##################################
+
+function isMobileDevice() {
+    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+};
+
+var mobileFlag = isMobileDevice();
+
+// if iPad, change mobileFlag = false;
+if (window.navigator.userAgent.search('iPad') != -1){
+    mobileFlag = false;
+};
+
+// #######################    util functions go here vvv    ##################################
+
+function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+}
+
+// #######################    routine for loading matches into left tab    ##################################
 
 var loadMatches = function (json, league) {
 
@@ -324,6 +328,8 @@ var loadMatches = function (json, league) {
 
 }
 
+// #######################    routine for displaying prediction tab    ##################################
+
 const matchButtonsOnClick = function(event) {
 
     $('#predictionTab').show();
@@ -491,6 +497,8 @@ const matchButtonsOnClick = function(event) {
 
 };
 
+// #######################    add listeners to 'how do I read this tab'    ##################################
+
 document.getElementById('escButton').addEventListener('click', () => {
     $('#predictionTab').hide();
     $('#backButtonUnderPredictionsTab').hide();
@@ -513,9 +521,10 @@ document.getElementById('darkBackground').addEventListener('click', () => {
     $('#howDoIReadThisTab').css('display','none');
 });
 
-loadMatches(json, 'E0');
 
-var leagueButtons = document.getElementsByClassName("leagueButton");
+// #######################    on page load: load games into left tab + add listeners to league buttons    ##################################
+
+loadMatches(json, 'E0');
 
 var leagueButtonsOnClick = function() {
 
@@ -525,9 +534,12 @@ var leagueButtonsOnClick = function() {
 
 };
 
+var leagueButtons = document.getElementsByClassName("leagueButton");
 Array.from(leagueButtons).forEach(function(element) {
     element.addEventListener('click', leagueButtonsOnClick);
 });
+
+// #######################    jquery button styling    ##################################
 
 $(document).ready(function(){
 

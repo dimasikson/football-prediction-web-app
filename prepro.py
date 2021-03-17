@@ -53,8 +53,6 @@ def downloadFiles(firstSeason, firstSeasonTest, lastSeason, train, leagues):
             df.to_csv(fpath)
 
 
-# downloadFiles()
-
 def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
     for league in leagues:
@@ -324,7 +322,6 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
         if train:
 
             trainDf.index = range(len(trainDf))
-
             fpath = f'processedData/train_{league}.csv'
 
             if os.path.exists(fpath):
@@ -333,15 +330,10 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
             trainDf.to_csv(fpath)
 
         testDf.index = range(len(testDf))
-
         fpath = f'processedData/test_{league}.csv'
 
         if os.path.exists(fpath):
             os.remove(fpath)
 
         testDf.to_csv(fpath)
-
-
-# preProcess()
-
 
