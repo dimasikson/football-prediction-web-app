@@ -1,4 +1,0 @@
-Football prediction web app TODO's:
-
-- update README
-	- add feature glossary
