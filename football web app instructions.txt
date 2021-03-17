@@ -1,7 +1,4 @@
 Football prediction web app TODO's:
 
-- clean up index.js
-- comment all code
-
 - update README
 	- add feature glossary
