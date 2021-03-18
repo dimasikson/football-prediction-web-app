@@ -2,7 +2,6 @@
 // main script
 
 $('#predictionTab').hide();
-$('#backButtonUnderPredictionsTab').hide();
 $('#howDoIReadThisButton').hide();
 
 // #######################    global constants    ##################################
@@ -26,25 +25,26 @@ const monthsConvert = {
 }
 
 const teamNameChange = {
-    'Fortuna Dusseldorf':'Fortuna',
-    'Union Berlin':'Union B.',
-    'Bayern Munich':'Bayern',
-    'Werder Bremen':'Werder',
-    'Ein Frankfurt': 'Eintracht',
-    'Leverkusen': 'Bayer 04',
-    'Crystal Palace':'C. Palace',
-    'Sheffield United':'Sheffield',
-    'Bournemouth':"B'mouth",
-    'Southampton':"So'ton",
-    'Tottenham': 'Spurs',
-    'Man United': 'Man Utd',
-    'Sheffield Weds': 'Sheff. Weds',
-    'Huddersfield': "Hud'field",
-    'Middlesbrough': "M'brough",
-    'PSV Eindhoven': 'PSV',
-    'Sparta Rotterdam': 'Sparta R',
-    'Pacos Ferreira': 'Pacos F',
-    'Santa Clara': 'Santa C'
+    "Fortuna Dusseldorf":"Fortuna",
+    "Union Berlin":"Union B.",
+    "Bayern Munich":"Bayern",
+    "Werder Bremen":"Werder",
+    "Ein Frankfurt": "Eintracht",
+    "Leverkusen": "Bayer 04",
+    "Crystal Palace":"C. Palace",
+    "Sheffield United":"Sheffield",
+    "Bournemouth":"Bmouth",
+    "Southampton":"Soton",
+    "Tottenham": "Spurs",
+    "Man United": "Man Utd",
+    "Sheffield Weds": "Shf. Weds",
+    "Nott'm Forest": "Ntm Forest",
+    "Huddersfield": "Huderrsf",
+    "Middlesbrough": "Mbrough",
+    "PSV Eindhoven": "PSV",
+    "Sparta Rotterdam": "Sparta R",
+    "Pacos Ferreira": "Pacos F",
+    "Santa Clara": "Santa C"
 };
 
 // #######################    load predicted.txt    ##################################
@@ -163,20 +163,30 @@ var loadMatches = function (json, league) {
         };
 
         var node = document.createElement("button");
-
-        node.classList.add('button');
-        node.innerHTML = hTeam + ' - ' + aTeam;
-        node.id = 'game:' + i.toString();
-
-        node.addEventListener('click', matchButtonsOnClick);
-
         var nodeDiv = document.createElement("div");
 
-        var resultColorSpan = document.createElement("span");
-        resultColorSpan.classList.add('resultColorSpan');
-        resultColorSpan.style.backgroundColor = '#eeff90';
-        resultColorSpan.style.color = '#eeff90';
-        resultColorSpan.id = 'game:' + i.toString();
+        node.classList.add('button');
+        node.id = 'game:' + i.toString();
+        node.addEventListener('click', matchButtonsOnClick);
+
+        var resultColorSpanH = document.createElement("span");
+        var resultColorSpanD = document.createElement("span");
+        var resultColorSpanA = document.createElement("span");
+
+        var spans = [resultColorSpanH, resultColorSpanD, resultColorSpanA];
+        var HDA = ['H', 'D', 'A'];
+
+        for (var idx in spans){
+
+            spans[idx].id = node.id + ':' + HDA[idx];
+            spans[idx].classList.add('resultColorSpan');
+            spans[idx].style.backgroundColor = '#36454f';
+            spans[idx].style.color = '#ffffff';
+            spans[idx].innerHTML = HDA[idx];
+            spans[idx].style.border = '2px solid #4f565a'
+            spans[idx].style.fontSize = '15px'
+
+        };
 
         // returns tab
 
@@ -201,8 +211,9 @@ var loadMatches = function (json, league) {
             countGames[predResult]++;
             countGamesDate[matchDate]++;
 
-            resultColorSpan.style.backgroundColor = '#fd3772';
-            resultColorSpan.style.color = '#fd3772';   
+            spans[HDA.indexOf(jsonFilteredGames[i]['FTR'])].style.border = '2px solid #999999';
+
+            var borderColor = '#fd3772';
 
             if (jsonFilteredGames[i]['FTR'] == predResult){
                 
@@ -211,25 +222,33 @@ var loadMatches = function (json, league) {
                 sumReturn[predResult] = sumReturn[predResult] + jsonFilteredGames[i][lookupOdds[predResult]]*20;
                 sumReturnDate[matchDate] = sumReturnDate[matchDate] + jsonFilteredGames[i][lookupOdds[predResult]]*20;
 
-                resultColorSpan.style.backgroundColor = '#42ffa7';
-                resultColorSpan.style.color = '#42ffa7';        
+                borderColor = '#42ffa7';
 
             }
                 
             sumReturn[predResult]--;
             sumReturnDate[matchDate]--;
 
-        }
+            spans[HDA.indexOf(predResult)].style.border = '2px solid ' + borderColor;
 
-        resultColorSpan.innerHTML = '.';
-        // resultColorSpan.innerHTML = predResult;
+        } else {
 
-        node.appendChild(resultColorSpan);
+            spans[HDA.indexOf(predResult)].style.border = '2px solid #eeff90';
 
-        nodeDiv.appendChild(node);
-        
+        };
+
+        var teamNamesSpan = document.createElement("span");
+        teamNamesSpan.innerHTML = hTeam + ' - ' + aTeam;
+        teamNamesSpan.style.marginLeft = '5px';
+        teamNamesSpan.id = node.id;
+
+        node.appendChild(resultColorSpanH);
+        node.appendChild(resultColorSpanD);
+        node.appendChild(resultColorSpanA);
+        node.appendChild(teamNamesSpan);
+
+        nodeDiv.appendChild(node);        
         document.getElementById('date:' + matchDate).appendChild(nodeDiv);
-
 
     };
 
@@ -312,7 +331,11 @@ var loadMatches = function (json, league) {
         function () {							
 
             $(this).animate({
-                backgroundColor: "#777777"
+                backgroundColor: "#4f565a"
+            }, 100 );
+
+            $(this).children().animate({
+                backgroundColor: "#4f565a"
             }, 100 );
 
             $(this).css('cursor','pointer');
@@ -321,6 +344,10 @@ var loadMatches = function (json, league) {
         function () {
 
             $(this).animate({
+                backgroundColor: "#36454f"
+            }, 100 );
+
+            $(this).children().animate({
                 backgroundColor: "#36454f"
             }, 100 );
 
@@ -336,7 +363,6 @@ const matchButtonsOnClick = function(event) {
     $('#predictionTab').show();
 
     if (mobileFlag==true){
-        $('#backButtonUnderPredictionsTab').show();
         $('#resultsMenu').hide();
     }
 
@@ -502,13 +528,6 @@ const matchButtonsOnClick = function(event) {
 
 document.getElementById('escButton').addEventListener('click', () => {
     $('#predictionTab').hide();
-    $('#backButtonUnderPredictionsTab').hide();
-    $('#resultsMenu').show();    
-});
-
-document.getElementById('backButtonUnderPredictionsTab').addEventListener('click', () => {
-    $('#predictionTab').hide();
-    $('#backButtonUnderPredictionsTab').hide();
     $('#resultsMenu').show();    
 });
 
@@ -548,7 +567,7 @@ $(document).ready(function(){
         function () {							
 
             $(this).animate({
-                backgroundColor: "#777777"
+                backgroundColor: "#4f565a"
             }, 100 );
 
             $(this).css('cursor','pointer');
@@ -567,7 +586,7 @@ $(document).ready(function(){
         function () {							
 
             $(this).animate({
-                backgroundColor: "#777777"
+                backgroundColor: "#4f565a"
             }, 100 );
 
             $(this).css('cursor','pointer');
