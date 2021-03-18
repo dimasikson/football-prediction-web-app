@@ -661,7 +661,8 @@ function make1DPlot(xArray, yArray, targetDiv){
             tickfont: {
                 family: 'sans-serif',
                 color: '#ffffff'
-            }
+            },
+            fixedrange: true,
         },
         yaxis:{
             autorange:'reversed',
@@ -670,14 +671,15 @@ function make1DPlot(xArray, yArray, targetDiv){
                 family: 'sans-serif',
                 size: 14,
                 color: '#ffffff'
-            }
+            },
+            fixedrange: true,
         },
         plot_bgcolor: plotColor,
         paper_bgcolor: plotColor,
         height: 500
     };
 
-    Plotly.newPlot(targetDiv, plotData, layout);
+    Plotly.newPlot(targetDiv, plotData, layout, {displayModeBar: false});
 
 };
 
