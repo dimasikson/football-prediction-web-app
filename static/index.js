@@ -1,9 +1,5 @@
 
-// main script
-
-$('#predictionTab').hide();
-$('#howDoIReadThisButton').hide();
-
+// #######################    main script    ##################################
 // #######################    global constants    ##################################
 
 var league = 'E0';
@@ -113,6 +109,7 @@ var loadMatches = function (json, league) {
     document.getElementById("resultsMenuGames").innerHTML = '';
 
     var countGamesDate = {};
+    var countWinsDate = {};
     var sumReturnDate = {};
 
     for (var i = 0; i < matchDates.length; i++){
@@ -120,6 +117,7 @@ var loadMatches = function (json, league) {
         var node = document.createElement("div");
 
         countGamesDate[matchDates[i]] = 0;
+        countWinsDate[matchDates[i]] = 0;
         sumReturnDate[matchDates[i]] = 0;
 
         var dateSplit = matchDates[i].split('-');
@@ -132,7 +130,6 @@ var loadMatches = function (json, league) {
         nodeDiv.appendChild(textnode);
 
         var spanROI = document.createElement("span");
-        spanROI.innerHTML = '+100% ROI';
         spanROI.classList.add('dateROI');
         spanROI.id = 'date:' + matchDates[i] + ':ROI';
         nodeDiv.appendChild(spanROI);
@@ -218,6 +215,7 @@ var loadMatches = function (json, league) {
             if (jsonFilteredGames[i]['FTR'] == predResult){
                 
                 countWins[predResult]++;
+                countWinsDate[matchDate]++;
 
                 sumReturn[predResult] = sumReturn[predResult] + jsonFilteredGames[i][lookupOdds[predResult]]*20;
                 sumReturnDate[matchDate] = sumReturnDate[matchDate] + jsonFilteredGames[i][lookupOdds[predResult]]*20;
@@ -309,6 +307,7 @@ var loadMatches = function (json, league) {
         } else {
 
             var returnDate = Math.round(sumReturnDate[i]*100/countGamesDate[i])
+            var accuracyDate = Math.round(countWinsDate[i]*100/countGamesDate[i])
 
             if (returnDate>=0){
                 var colorRet = '#42ffa7';
@@ -319,6 +318,9 @@ var loadMatches = function (json, league) {
             }
 
             dateROItext = signRetDate + Math.abs(returnDate) + '% ROI';
+            // dateROItext = dateROItext + ', ' + accuracyDate + '% Acc';
+            // dateROItext = dateROItext + ', ' + countGamesDate[i] + ' Game(s)';
+
         }
 
         document.getElementById('date:'+i+':ROI').innerHTML = dateROItext;
@@ -501,9 +503,9 @@ const matchButtonsOnClick = function(event) {
         'T_GoalsFor_A': ['Goals + (A)', 10],
         'T_GoalsAg_A': ['Goals - (A)', 10],
         'T_Conversion_H': ['Conversion (H)', 1],
-        'T_Conversion_A': ['Conversion (H)', 1],
+        'T_Conversion_A': ['Conversion (A)', 1],
         'T_Accuracy_H': ['Accuracy (H)', 1],
-        'T_Accuracy_A': ['Accuracy (H)', 1],
+        'T_Accuracy_A': ['Accuracy (A)', 1],
         'T_Points_H': ['Pts average (H)', 3],
         'T_Points_A': ['Pts average (A)', 3],
         'L3M_Points_H': ['Pts in last 3 (H)', 3],
@@ -530,17 +532,6 @@ document.getElementById('escButton').addEventListener('click', () => {
     $('#predictionTab').hide();
     $('#resultsMenu').show();    
 });
-
-document.getElementById('howDoIReadThisButton').addEventListener('click', () => {
-    $('#darkBackground').css('display','block');
-    $('#howDoIReadThisTab').css('display','block');
-});
-
-document.getElementById('darkBackground').addEventListener('click', () => {
-    $('#darkBackground').css('display','none');
-    $('#howDoIReadThisTab').css('display','none');
-});
-
 
 // #######################    on page load: load games into left tab + add listeners to league buttons    ##################################
 
@@ -601,12 +592,6 @@ $(document).ready(function(){
         }
     );
 
-    $('#darkBackground').hover(
-        function () {							
-            $(this).css('cursor','pointer');
-        }
-    );
-
 });
 
 // #######################    plots    ##################################
@@ -647,6 +632,7 @@ function make1DPlot(xArray, yArray, targetDiv){
         title: {
             text:'SHAP local explanation',
             font: {
+                family: 'Ubuntu',
                 color: '#ffffff'
             }
         },
@@ -659,7 +645,7 @@ function make1DPlot(xArray, yArray, targetDiv){
                 }
             },
             tickfont: {
-                family: 'sans-serif',
+                family: 'Ubuntu',
                 color: '#ffffff'
             },
             fixedrange: true,
@@ -668,9 +654,10 @@ function make1DPlot(xArray, yArray, targetDiv){
             autorange:'reversed',
             automargin: true,            
             tickfont: {
-                family: 'sans-serif',
+                family: 'Ubuntu',
                 size: 14,
-                color: '#ffffff'
+                color: '#ffffff',
+                weight: 1000,
             },
             fixedrange: true,
         },
@@ -683,3 +670,6 @@ function make1DPlot(xArray, yArray, targetDiv){
 
 };
 
+// #######################    last step, display content    ##################################
+
+$('#mainContentDiv').show();    

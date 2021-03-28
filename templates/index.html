@@ -6,131 +6,11 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
         <link rel="shortcut icon" href="">
-        <style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+        <link rel="stylesheet" href="static/styles.css">
 
-            body, html {
-                margin: 0;
-                color: azure;
-                background-color: #2b2d2f;
-                font-family: sans-serif;
-                overflow-x: hidden;
-                max-width: 100%;
-            }
-
-            body {
-                position: relative;
-            }
- 
-            .content {
-                margin: 0 auto;
-                width: 800px;
-            }
- 
-            .matchMenu {
-                float: left;
-                width: 360px;
-				padding: 10px 10px;
-				margin: 4px;
-                background-color: #2f363b;
-                border-radius: 10px;
-                color: white;
-                font-weight: bold;
-            }
-
-            .header{
-                float: left;
-                width: 938px; 
-				padding: 5px;
-				margin: 4px;
-                background-color: #2f363b;
-                border-radius: 10px;
-                color: white;
-                font-weight: bold;
-            }
-
-            .dateNode {
-                margin: 0 auto;
-				padding: 10px 10px;
-				margin-right: 2px;
-                background-color: #2f363b;
-                border-radius: 10px;
-                color: white;
-            }
-
-            .button {
-				font-size: 20px;
-                padding: 4px 8px; 
-                border: 0px solid #36454f; 
-                background-color: #36454f; 
-                color: white;
-                border-radius: 10px;
-                font-family: sans-serif;
-                margin: 2px;
-            }
-
-            .resultColorSpan {
-                background-color: white;
-                font-family: sans-serif;
-                margin-right: 2px;
-                padding: 0px 4px; 
-                border-radius: 5px;  
-                vertical-align: middle;
-            }
-
-            .topButton {
-                float: right;
-                margin: 3px;
-            }
-
-            .howDoIReadThisTab{
-                top: 20%;
-                left: 10%;
-                width: 80%;
-                position: absolute;
-                background-color:rgb(89, 105, 110);
-                border-radius: 20px;
-                display: none;
-                opacity: 0.95;
-                padding: 20px;
-                color: black;
-                font-size: larger;
-            }
-
-            .darkBackground {
-                height: 200%;
-                width: 100%;
-                position: absolute;
-                background-color: black;
-                display: none;
-                opacity: 0.5;
-            }
-
-            .leagueButton {
-                margin: 5px; 
-                height: 25px;
-                font-size: medium;
-                border-radius: 5px; 
-                border: 0px solid #36454f; 
-                background-color: #36454f; 
-                color: white;
-            }
-
-            th, td {
-                margin: 5px; 
-                font-size: medium;
-                border-radius: 5px; 
-                border: 2px solid #36454f; 
-                background-color: #36454f; 
-                color: white;
-                padding: 4px;
-            }
-
-            .dateROI {
-                margin-left: 10px;
-            }
-
-        </style>
         <title>Football predictor</title>
+
     </head>
     <body>
         <!-- import libraries -->
@@ -138,23 +18,7 @@
         <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-        <div id='darkBackground' class='darkBackground'></div>
-        <div id='howDoIReadThisTab' class='howDoIReadThisTab'> 
-            
-            <b>"What are we predicting?"</b> <br> 
-                - We are predicting the goal difference (home team perspective)! Game that ends 2-0 corresponds to +2, 1-2 to -1, 3-3 to 0, etc. <br><br>
-            <b>"What is XGBoost?"</b> <br> 
-                - XGBoost is a decision tree method improved using various ensemble methods like boosting and bagging. It's awesome! <a href="https://towardsdatascience.com/https-medium-com-vishalmorde-xgboost-algorithm-long-she-may-rein-edd9f99be63d">Read more.</a> <br><br>
-            <b>"What is SHAP?"</b> <br>
-                - SHAP is a way to reverse engineer output of a complex model using game theory. It also allows us to display contributions of each feature to the output in a GAM format, which is highly interpretable! <a href="https://github.com/slundberg/shap">Read more.</a> <br><br>
-            <b>"What are the bars in the chart?"</b> <br>
-                - The SHAP local explanations! They show the contribution made by each variable to the output. <br><br>
-            <b>"How do I read the odds?"</b> <br>
-                - We use decimal odds. If I bet 1 unit of currency and I win, I get in return 1*X my money (X is the betting odd).<br>
-
-        </div>
-
-        <div class="content" id="mainContentDiv">
+        <div class="content" id="mainContentDiv" style="display: none">
 
             <div class="matchMenu" id="resultsMenu">
 
@@ -211,14 +75,11 @@
 
             </div>
 
-            <span class="matchMenu" id="predictionTab" style="width: 380px;">
+            <span class="matchMenu" id="predictionTab" style="width: 380px; display:none">
             
                 <div style="padding-left: 10px; color: white; font-size: large; height: 50px; margin: 5px;" id='predictionTabTeams'>
                     <span style='float: left; font-size: large;' id='predictionTabTeamNames'></span>
                     <button class="topButton" id='escButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white; font-size: x-large;"> &times; </button>
-                    <button class="topButton" id='howDoIReadThisButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white;">
-                        How to read this?
-                    </button>
                 </div>
             
                 <div style="padding-left: 10px; color: white; margin-left: 10px;" id='predictionTabRes'></div>
