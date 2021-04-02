@@ -406,7 +406,7 @@ const matchButtonsOnClick = function(event) {
     $('#predictionTabPred').css('color',colorPred);
 
     var dateSplit = gameStats['Date'].split(' ')[0].split('-');
-    var dateDisplay = parseInt(dateSplit[2]) + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0];
+    var dateDisplay = parseInt(dateSplit[2]) + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0] + ", " + gameStats['Time'];
 
     var hTeam = gameStats['HomeTeam'];
     var aTeam = gameStats['AwayTeam'];
@@ -600,6 +600,9 @@ const plotMargin = 30;
 const plotMarginLeft = 150;
 
 const plotColor = '#2f363b';
+const fontFamily = getComputedStyle(document.documentElement).getPropertyValue('--main-font-family');
+
+console.log(fontFamily);
 
 function make1DPlot(xArray, yArray, targetDiv){
 
@@ -632,7 +635,7 @@ function make1DPlot(xArray, yArray, targetDiv){
         title: {
             text:'SHAP local explanation',
             font: {
-                family: 'Ubuntu',
+                family: fontFamily,
                 color: '#ffffff'
             }
         },
@@ -641,11 +644,12 @@ function make1DPlot(xArray, yArray, targetDiv){
                 text: 'Predicted goal difference',
                 font: {
                     color: '#ffffff',
+                    family: fontFamily,
                     size: 12
                 }
             },
             tickfont: {
-                family: 'Ubuntu',
+                family: fontFamily,
                 color: '#ffffff'
             },
             fixedrange: true,
@@ -654,7 +658,7 @@ function make1DPlot(xArray, yArray, targetDiv){
             autorange:'reversed',
             automargin: true,            
             tickfont: {
-                family: 'Ubuntu',
+                family: fontFamily,
                 size: 14,
                 color: '#ffffff',
                 weight: 1000,

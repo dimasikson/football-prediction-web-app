@@ -106,7 +106,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
             df = df[[
                 'Div',
-                'Date',
+                'Date', 'Time',
                 'HomeTeam', 'AwayTeam',
                 'FTHG', 'FTAG',
                 'HTHG', 'HTAG',
@@ -118,7 +118,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
             df.columns = [
                     'Div',
-                    'Date',
+                    'Date', 'Time',
                     'HomeTeam', 'AwayTeam',
                     'GoalsFor_H', 'GoalsFor_A',
                     'GoalsForHT_H', 'GoalsForHT_A',

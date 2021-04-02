@@ -1,8 +1,12 @@
+:root {
+    --main-font-family: 'IBM Plex Mono';
+}
+
 body, html {
     margin: 0;
     color: azure;
     background-color: #2b2d2f;
-    font-family: Ubuntu;
+    font-family: var(--main-font-family);
     overflow-x: hidden;
     max-width: 100%;
 }
@@ -48,7 +52,9 @@ body {
 }
 
 .button {
-    font-size: 20px;
+    font-size: 15px;
+    font-family: var(--main-font-family);
+    font-weight: bold;
     padding: 4px 8px; 
     border: 0px solid #36454f; 
     background-color: #36454f; 
@@ -67,6 +73,7 @@ body {
 
 .topButton {
     float: right;
+    font-family: var(--main-font-family);
     margin: 3px;
 }
 
@@ -97,6 +104,8 @@ body {
     margin: 5px; 
     height: 25px;
     font-size: medium;
+    font-family: var(--main-font-family);
+    font-weight: bold;
     border-radius: 5px; 
     border: 0px solid #36454f; 
     background-color: #36454f; 
