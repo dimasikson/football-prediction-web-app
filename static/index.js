@@ -661,7 +661,6 @@ function make1DPlot(xArray, yArray, targetDiv){
                 family: fontFamily,
                 size: 14,
                 color: '#ffffff',
-                weight: 1000,
             },
             fixedrange: true,
         },

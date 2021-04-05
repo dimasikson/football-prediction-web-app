@@ -1,5 +1,7 @@
 :root {
-    --main-font-family: 'IBM Plex Mono';
+    --main-font-family: 'Inconsolata';
+    --shadow-color-1: #222222;
+    --shadow-color-2: #292929;
 }
 
 body, html {
@@ -29,6 +31,7 @@ body {
     border-radius: 10px;
     color: white;
     font-weight: bold;
+    box-shadow: 0 2px 6px 2px var(--shadow-color-1);
 }
 
 .header{
@@ -52,7 +55,7 @@ body {
 }
 
 .button {
-    font-size: 15px;
+    font-size: large;
     font-family: var(--main-font-family);
     font-weight: bold;
     padding: 4px 8px; 
@@ -61,6 +64,7 @@ body {
     color: white;
     border-radius: 10px;
     margin: 2px;
+    box-shadow: 0 1px 6px 1px var(--shadow-color-2);
 }
 
 .resultColorSpan {
@@ -75,6 +79,7 @@ body {
     float: right;
     font-family: var(--main-font-family);
     margin: 3px;
+    box-shadow: 0 2px 6px 2px var(--shadow-color-1);
 }
 
 .howDoIReadThisTab{
@@ -110,6 +115,7 @@ body {
     border: 0px solid #36454f; 
     background-color: #36454f; 
     color: white;
+    box-shadow: 0 1px 6px 1px var(--shadow-color-2);
 }
 
 th, td {
@@ -119,7 +125,8 @@ th, td {
     border: 2px solid #36454f; 
     background-color: #36454f; 
     color: white;
-    padding: 4px;
+    padding: 4px; 
+    box-shadow: 0 1px 6px 1px var(--shadow-color-2);
 }
 
 .dateROI {
