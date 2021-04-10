@@ -6,8 +6,8 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
         <link rel="shortcut icon" href="">
+        <link rel="stylesheet" href="static/styles.css" id="mainStyleSheet">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
-        <link rel="stylesheet" href="static/styles.css">
         <link rel="icon" href="static/chart-increasing-microsoft.png">
 
         <title>Football predictor</title>
@@ -19,11 +19,15 @@
         <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-        <div class="content" id="mainContentDiv" style="display: none">
+        <div class="content" id="mainContentDiv">
 
             <div class="matchMenu" id="resultsMenu">
 
-                <div style="font-size: x-large; padding: 10px; padding-right: 0px;">Football predictor</div>
+                <span id="darkModeButtonSpan">
+                    <img src="static/sun.png" id="darkModeIcon">
+                </span>
+
+                <div id="matchMenuTitle">Football predictor</div>
 
                 <button id='leagueButton:W0' class="leagueButton">World</button>
                 <button id='leagueButton:E0' class="leagueButton">Premier League</button>
@@ -37,7 +41,7 @@
 
                 <div id="resultsMenuReturns">
                     
-                    <table style="margin-top: 10px;">
+                    <table id="resultsTable">
                         <tr>
                             <th>Predicted</th>
                             <th>Home</th>
@@ -70,30 +74,30 @@
 
                 </div>
 
-                <h2 style="padding-left: 10px; color: white;">Fixtures / Results:</h2>
+                <h2 id="resultsMenuTitle">Fixtures / Results:</h2>
 
                 <div id="resultsMenuGames"></div>
 
             </div>
 
-            <span class="matchMenu" id="predictionTab" style="width: 380px; display:none">
+            <span class="matchMenu" id="predictionTab">
             
-                <div style="padding-left: 10px; color: white; font-size: large; height: 50px; margin: 5px;" id='predictionTabTeams'>
-                    <span style='float: left; font-size: large;' id='predictionTabTeamNames'></span>
-                    <button class="topButton" id='escButton' style="border-radius: 5px; border: 0px; background-color: #36454f; color: white; font-size: x-large;"> &times; </button>
+                <div id='predictionTabTeams'>
+                    <span id='predictionTabTeamNames'></span>
+                    <button class="topButton" id='escButton'> &times; </button>
                 </div>
             
-                <div style="padding-left: 10px; color: white; margin-left: 10px;" id='predictionTabRes'></div>
-                <div style="padding-left: 10px; color: white; margin-left: 10px;" id='predictionTabPred'></div>
-                <div style="padding-left: 10px; color: white; margin: 10px; margin-top: 20px;" id='predictionTabOdds'>
+                <div id='predictionTabRes'></div>
+                <div id='predictionTabPred'></div>
+                <div id='predictionTabOdds'>
                     
-                    <span id = 'HomeOdds' style="margin: 3px; padding: 5px; border-radius: 5px;"></span>
-                    <span id = 'DrawOdds' style="margin: 3px; padding: 5px; border-radius: 5px;"></span>
-                    <span id = 'AwayOdds' style="margin: 3px; padding: 5px; border-radius: 5px;"></span>
+                    <span id='HomeOdds'></span>
+                    <span id='DrawOdds'></span>
+                    <span id='AwayOdds'></span>
 
                 </div>
 
-                <div style="margin-top: 30px; margin-left: 0px; color: lightgrey; border: 0px solid #36454f; border-radius: 5px;">
+                <div id="chartCanvasHolder">
                     <div id="chartCanvas"></div>
                 </div>
     

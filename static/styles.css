@@ -1,25 +1,62 @@
 :root {
     --main-font-family: 'Inconsolata';
-    --shadow-color-1: #222222;
-    --shadow-color-2: #292929;
-}
 
-body, html {
-    margin: 0;
-    color: azure;
-    background-color: #2b2d2f;
-    font-family: var(--main-font-family);
-    overflow-x: hidden;
-    max-width: 100%;
+    --shadow-color-dm: #222222;
+    --shadow-color-lm: #cacaca;
+
+    --shadow-dims-dm: 0px 1px 6px 1px;
+    --shadow-dims-lm: 0px 1px 6px 1px;
+
+    --main-font-color-dm: azure;
+    --main-font-color-lm: black;
+
+    --dlm-logo-src-dm: static/sun.png;
+    --dlm-logo-src-lm: static/moon.png;
+
+    --main-bg-color-dm: #2b2d2f;
+    --main-bg-color-lm: #ffffff;
+
+    --main-menu-color-dm: #2f363b;
+    --main-menu-color-lm: #ffffff;
+
+    --main-button-color-dm: #36454f;
+    --main-button-color-lm: #ffffff;
+
+    --hover-button-color-dm: #4f565a;
+    --hover-button-color-lm: #cacaca;
+
+    --wrong-result-color-dm: #bbbbbb;
+    --wrong-result-color-lm: #666666;
+
+    --win-color-dm: #42ffa7;
+    --win-color-lm: #01a332;
+
+    --loss-color-dm: #fd3772;
+    --loss-color-lm: #c5005c;
+
+    --upcoming-color-dm: #eeff90;
+    --upcoming-color-lm: #ffa600;
+
 }
 
 body {
+    margin: 0;
+    background-color: var(--main-bg-color-dm);
+    font-family: var(--main-font-family);
+    color: var(--main-font-color-dm);
+    overflow-x: hidden;
+    max-width: 100%;
     position: relative;
+}
+
+button {
+    color: var(--main-font-color-dm);
 }
 
 .content {
     margin: 0 auto;
     width: 800px;
+    display: none;
 }
 
 .matchMenu {
@@ -27,11 +64,10 @@ body {
     width: 360px;
     padding: 10px 10px;
     margin: 4px;
-    background-color: #2f363b;
+    background-color: var(--main-menu-color-dm);
     border-radius: 10px;
-    color: white;
     font-weight: bold;
-    box-shadow: 0 2px 6px 2px var(--shadow-color-1);
+    box-shadow: var(--shadow-dims-dm) var(--shadow-color-dm);
 }
 
 .header{
@@ -39,9 +75,8 @@ body {
     width: 938px; 
     padding: 5px;
     margin: 4px;
-    background-color: #2f363b;
+    background-color: var(--main-menu-color-dm);
     border-radius: 10px;
-    color: white;
     font-weight: bold;
 }
 
@@ -49,9 +84,8 @@ body {
     margin: 0 auto;
     padding: 10px 10px;
     margin-right: 2px;
-    background-color: #2f363b;
+    background-color: var(--main-menu-color-dm);
     border-radius: 10px;
-    color: white;
 }
 
 .button {
@@ -59,19 +93,18 @@ body {
     font-family: var(--main-font-family);
     font-weight: bold;
     padding: 4px 8px; 
-    border: 0px solid #36454f; 
-    background-color: #36454f; 
-    color: white;
+    border: 0px; 
+    background-color: var(--main-button-color-dm); 
     border-radius: 10px;
     margin: 2px;
-    box-shadow: 0 1px 6px 1px var(--shadow-color-2);
+    box-shadow: var(--shadow-dims-dm) var(--shadow-color-dm);
 }
 
 .resultColorSpan {
-    background-color: white;
     margin-right: 2px;
     padding: 0px 4px; 
     border-radius: 5px;  
+    background-color: var(--main-button-color-dm); 
     vertical-align: middle;
 }
 
@@ -79,30 +112,70 @@ body {
     float: right;
     font-family: var(--main-font-family);
     margin: 3px;
-    box-shadow: 0 2px 6px 2px var(--shadow-color-1);
+    box-shadow: var(--shadow-dims-dm) var(--shadow-color-dm);
 }
 
-.howDoIReadThisTab{
-    top: 20%;
-    left: 10%;
-    width: 80%;
-    position: absolute;
-    background-color:rgb(89, 105, 110);
-    border-radius: 20px;
-    display: none;
-    opacity: 0.95;
-    padding: 20px;
-    color: black;
-    font-size: larger;
+#darkModeButtonSpan {
+    float: right;
 }
 
-.darkBackground {
-    height: 200%;
-    width: 100%;
-    position: absolute;
-    background-color: black;
-    display: none;
-    opacity: 0.5;
+#darkModeIcon {
+    display: block;
+    margin: auto;
+    border-radius: 50%;
+}
+
+#matchMenuTitle {
+    font-size: x-large; 
+    padding: 10px; 
+    padding-right: 0px;
+}
+
+#resultsMenuTitle {
+    padding-left: 10px; 
+}
+
+#escButton {
+    border-radius: 5px; 
+    border: 0px; 
+    background-color: var(--main-button-color-dm); 
+    font-size: x-large;
+}
+
+#predictionTabTeams {
+    padding-left: 10px; 
+    font-size: large; 
+    height: 50px; 
+    margin: 5px;
+}
+
+#predictionTabTeamNames {
+    float: left; 
+    font-size: large;
+}
+
+#predictionTabRes, #predictionTabPred {
+    padding-left: 10px; 
+    margin-left: 10px;
+}
+
+#predictionTabOdds {
+    padding-left: 10px; 
+    margin: 10px; 
+    margin-top: 20px;
+}
+
+#HomeOdds, #DrawOdds, #AwayOdds {
+    margin: 3px; 
+    padding: 5px; 
+    border-radius: 5px;
+}
+
+#chartCanvasHolder {
+    margin-top: 30px; 
+    margin-left: 0px; 
+    border: 0px; 
+    border-radius: 5px;
 }
 
 .leagueButton {
@@ -112,21 +185,28 @@ body {
     font-family: var(--main-font-family);
     font-weight: bold;
     border-radius: 5px; 
-    border: 0px solid #36454f; 
-    background-color: #36454f; 
-    color: white;
-    box-shadow: 0 1px 6px 1px var(--shadow-color-2);
+    border: 0px; 
+    background-color: var(--main-button-color-dm); 
+    box-shadow: var(--shadow-dims-dm) var(--shadow-color-dm);
+}
+
+#resultsTable {
+    margin-top: 10px;
+}
+
+#predictionTab {
+    width: 380px; 
+    display:none
 }
 
 th, td {
     margin: 5px; 
     font-size: medium;
     border-radius: 5px; 
-    border: 2px solid #36454f; 
-    background-color: #36454f; 
-    color: white;
+    border: 2px solid var(--main-button-color-dm); 
+    background-color: var(--main-button-color-dm); 
     padding: 4px; 
-    box-shadow: 0 1px 6px 1px var(--shadow-color-2);
+    box-shadow: var(--shadow-dims-dm) var(--shadow-color-dm);
 }
 
 .dateROI {

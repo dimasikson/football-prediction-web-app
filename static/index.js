@@ -1,8 +1,8 @@
 
 // #######################    main script    ##################################
-// #######################    global constants    ##################################
+// #######################    global consts & vars    ##################################
 
-var league = 'E0';
+var LEAGUE = 'E0';
 const fname = 'static/predicted.txt';
 
 const monthsConvert = {
@@ -43,9 +43,49 @@ const teamNameChange = {
     "Santa Clara": "Santa C"
 };
 
+// #######################    pull dark / light mode parameters    ##################################
+
+const pullDarkLightModeParameters = function() {
+
+    out = {};
+
+    const paramNames = [
+        'dlm-logo-src', 
+        'main-font-color', 
+        'main-bg-color',
+        'main-menu-color',
+        'main-button-color',
+        'hover-button-color',
+        'wrong-result-color',
+        'shadow-color',
+        'shadow-dims',
+        'win-color',
+        'loss-color',
+        'upcoming-color',
+    ];
+
+    if (DARK_MODE) {
+        var DLMidePostFix = 'dm';
+    } else {
+        var DLMidePostFix = 'lm';
+    }
+
+    for (i in paramNames) {
+        out[paramNames[i]] = getComputedStyle(document.documentElement).getPropertyValue('--' + paramNames[i] + '-' + DLMidePostFix);
+    };
+
+
+    return out;
+
+};
+
+// dark / light mode related global variables
+var DARK_MODE = true;
+var DL_MODE_PARAMS = pullDarkLightModeParameters();
+
 // #######################    load predicted.txt    ##################################
 
-var json = null;
+var JSON_MAIN = null;
 function loadJSON() {
     $.ajax({
         'type': 'GET',
@@ -55,13 +95,13 @@ function loadJSON() {
         'dataType': "text",
         'cache': false,
         'success': function (data) {
-            json = data;
+            JSON_MAIN = data;
         }
     });
-    return JSON.parse(json);
+    return JSON.parse(JSON_MAIN);
 };
 
-json = loadJSON();
+JSON_MAIN = loadJSON();
 
 // #######################    set global mobileFlag variable    ##################################
 
@@ -69,11 +109,11 @@ function isMobileDevice() {
     return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 };
 
-var mobileFlag = isMobileDevice();
+var MOBILE_FLAG = isMobileDevice();
 
 // if iPad, change mobileFlag = false;
 if (window.navigator.userAgent.search('iPad') != -1){
-    mobileFlag = false;
+    MOBILE_FLAG = false;
 };
 
 // #######################    util functions go here vvv    ##################################
@@ -177,10 +217,8 @@ var loadMatches = function (json, league) {
 
             spans[idx].id = node.id + ':' + HDA[idx];
             spans[idx].classList.add('resultColorSpan');
-            spans[idx].style.backgroundColor = '#36454f';
-            spans[idx].style.color = '#ffffff';
             spans[idx].innerHTML = HDA[idx];
-            spans[idx].style.border = '2px solid #4f565a'
+            spans[idx].style.border = '2px solid transparent'
             spans[idx].style.fontSize = '15px'
 
         };
@@ -208,9 +246,9 @@ var loadMatches = function (json, league) {
             countGames[predResult]++;
             countGamesDate[matchDate]++;
 
-            spans[HDA.indexOf(jsonFilteredGames[i]['FTR'])].style.border = '2px solid #999999';
+            spans[HDA.indexOf(jsonFilteredGames[i]['FTR'])].style.border = '2px solid ' + DL_MODE_PARAMS['wrong-result-color'];
 
-            var borderColor = '#fd3772';
+            var borderColor = DL_MODE_PARAMS['loss-color'];
 
             if (jsonFilteredGames[i]['FTR'] == predResult){
                 
@@ -220,7 +258,7 @@ var loadMatches = function (json, league) {
                 sumReturn[predResult] = sumReturn[predResult] + jsonFilteredGames[i][lookupOdds[predResult]]*20;
                 sumReturnDate[matchDate] = sumReturnDate[matchDate] + jsonFilteredGames[i][lookupOdds[predResult]]*20;
 
-                borderColor = '#42ffa7';
+                borderColor = DL_MODE_PARAMS['win-color'];
 
             }
                 
@@ -231,7 +269,7 @@ var loadMatches = function (json, league) {
 
         } else {
 
-            spans[HDA.indexOf(predResult)].style.border = '2px solid #eeff90';
+            spans[HDA.indexOf(predResult)].style.border = '2px solid ' + DL_MODE_PARAMS['upcoming-color'];
 
         };
 
@@ -239,6 +277,10 @@ var loadMatches = function (json, league) {
         teamNamesSpan.innerHTML = hTeam + ' - ' + aTeam;
         teamNamesSpan.style.marginLeft = '5px';
         teamNamesSpan.id = node.id;
+
+        if (MOBILE_FLAG){
+            teamNamesSpan.style.fontSize = 'medium';
+        }
 
         node.appendChild(resultColorSpanH);
         node.appendChild(resultColorSpanD);
@@ -275,10 +317,10 @@ var loadMatches = function (json, league) {
         }
 
         if (returns>=0){
-            var colorRet = '#42ffa7';
+            var colorRet = DL_MODE_PARAMS['win-color'];
             var signRet = '+';
         } else {
-            var colorRet = '#fd3772';
+            var colorRet = DL_MODE_PARAMS['loss-color'];
             var signRet = '-';
         }
 
@@ -300,7 +342,7 @@ var loadMatches = function (json, league) {
     for (var i in countGamesDate){
 
         var dateROItext;
-        var colorRet = '#eeff90';
+        var colorRet = DL_MODE_PARAMS['upcoming-color'];
 
         if (countGamesDate[i]==0){
             dateROItext = 'Upcoming';
@@ -310,10 +352,10 @@ var loadMatches = function (json, league) {
             var accuracyDate = Math.round(countWinsDate[i]*100/countGamesDate[i])
 
             if (returnDate>=0){
-                var colorRet = '#42ffa7';
+                var colorRet = DL_MODE_PARAMS['win-color'];
                 var signRetDate = '+';
             } else {
-                var colorRet = '#fd3772';
+                var colorRet = DL_MODE_PARAMS['loss-color'];
                 var signRetDate = '-';    
             }
 
@@ -333,11 +375,11 @@ var loadMatches = function (json, league) {
         function () {							
 
             $(this).animate({
-                backgroundColor: "#4f565a"
+                backgroundColor: DL_MODE_PARAMS['hover-button-color']
             }, 100 );
 
             $(this).children().animate({
-                backgroundColor: "#4f565a"
+                backgroundColor: DL_MODE_PARAMS['hover-button-color']
             }, 100 );
 
             $(this).css('cursor','pointer');
@@ -346,11 +388,11 @@ var loadMatches = function (json, league) {
         function () {
 
             $(this).animate({
-                backgroundColor: "#36454f"
+                backgroundColor: DL_MODE_PARAMS['main-button-color']
             }, 100 );
 
             $(this).children().animate({
-                backgroundColor: "#36454f"
+                backgroundColor: DL_MODE_PARAMS['main-button-color']
             }, 100 );
 
         }
@@ -364,7 +406,7 @@ const matchButtonsOnClick = function(event) {
 
     $('#predictionTab').show();
 
-    if (mobileFlag==true){
+    if (MOBILE_FLAG==true){
         $('#resultsMenu').hide();
     }
 
@@ -379,7 +421,7 @@ const matchButtonsOnClick = function(event) {
     
     var gameId = event.srcElement.id.split(':')[1];
 
-    var gameStats = json[gameId];
+    var gameStats = JSON_MAIN[gameId];
 
     var predResult;
 
@@ -394,13 +436,13 @@ const matchButtonsOnClick = function(event) {
     if (gameStats['FTR'] != 0) {
 
         if (predResult == gameStats['FTR']){
-            var colorPred = '#42ffa7';
+            var colorPred = DL_MODE_PARAMS['win-color'];
         } else {
-            var colorPred = '#fd3772';
+            var colorPred = DL_MODE_PARAMS['loss-color'];
         }
     
     } else {
-        var colorPred = '#eeff90';
+        var colorPred = DL_MODE_PARAMS['upcoming-color'];
     }
 
     $('#predictionTabPred').css('color',colorPred);
@@ -445,14 +487,14 @@ const matchButtonsOnClick = function(event) {
     for (var i in oddsList){
         var odds = gameStats[oddsList[i]];
 
-        $('#'+oddsList[i]).css('border','2px solid #36454f');
+        $('#'+oddsList[i]).css('border','2px solid ' + DL_MODE_PARAMS['hover-button-color']);
 
         $('#'+oddsList[i]).html(
             oddsList[i].charAt(0) + ': ' + Math.round(odds*20*100)/100
         );
 
         if (gameStats['FTR'] == oddsList[i].charAt(0)){
-            $('#'+oddsList[i]).css('border','2px solid #888888');
+            $('#'+oddsList[i]).css('border','2px solid ' + DL_MODE_PARAMS['wrong-result-color']);
         }
 
         if (predResult == oddsList[i].charAt(0)){
@@ -526,21 +568,78 @@ const matchButtonsOnClick = function(event) {
 
 };
 
-// #######################    add listeners to 'how do I read this tab'    ##################################
+// #######################    add listeners    ##################################
 
 document.getElementById('escButton').addEventListener('click', () => {
     $('#predictionTab').hide();
     $('#resultsMenu').show();    
 });
 
+document.getElementById('darkModeIcon').addEventListener('click', () => {
+
+    // flip DARK_MODE
+    DARK_MODE = !DARK_MODE
+
+    // pull parameters
+    DL_MODE_PARAMS = pullDarkLightModeParameters();
+
+    // pull rule names into array, for later locating index
+    var sheet = document.styleSheets[0];
+    var rules = sheet.cssRules || sheet.rules;
+    var ruleNames = [];
+
+    for (i in rules) {
+        ruleNames.push(rules[i].selectorText)
+    };
+
+    // change dark / light mode button logo
+    $("#darkModeIcon").prop("src", DL_MODE_PARAMS['dlm-logo-src']);
+    
+    // change font color
+    $("body, button").css({"color": DL_MODE_PARAMS['main-font-color']});
+
+    var el = rules[ruleNames.indexOf('button')]
+    el.style.color = DL_MODE_PARAMS['main-font-color']
+    
+    // change bg color
+    $("body").css({"background-color": DL_MODE_PARAMS['main-bg-color']});
+    
+    // change menu color
+    $(".matchMenu, .dateNode").css({"background-color": DL_MODE_PARAMS['main-menu-color']});
+
+    var el = rules[ruleNames.indexOf('.dateNode')]
+    el.style.backgroundColor = DL_MODE_PARAMS['main-menu-color']
+    
+    // change button color
+    $(".button, .button > span, .leagueButton, #escButton, th, td").css({"background-color": DL_MODE_PARAMS['main-button-color']});
+    $("th, td").css({"border": '2px solid' + DL_MODE_PARAMS['main-button-color']});
+
+    var el = rules[ruleNames.indexOf('.button')]
+    el.style.backgroundColor = DL_MODE_PARAMS['main-button-color']
+
+    var el = rules[ruleNames.indexOf('.resultColorSpan')]
+    el.style.backgroundColor = DL_MODE_PARAMS['main-button-color']
+   
+    // change shadow color
+    $(".matchMenu, .topButton, .button, .leagueButton, th, td").css({"box-shadow": DL_MODE_PARAMS['shadow-dims'] + ' ' + DL_MODE_PARAMS['shadow-color']});
+
+    var el = rules[ruleNames.indexOf('.button')]
+    el.style.boxShadow = DL_MODE_PARAMS['shadow-dims'] + ' ' + DL_MODE_PARAMS['shadow-color']
+    
+    // return to initial state - hide prediction tab and reload the matches (to update the conditional styling)
+    $('#predictionTab').hide();
+    loadMatches(JSON_MAIN, LEAGUE);
+
+});
+
 // #######################    on page load: load games into left tab + add listeners to league buttons    ##################################
 
-loadMatches(json, 'E0');
+loadMatches(JSON_MAIN, LEAGUE);
 
 var leagueButtonsOnClick = function() {
 
-    var leagueCode = this.id.split(':')[1];
-    loadMatches(json, leagueCode);
+    LEAGUE = this.id.split(':')[1];
+    loadMatches(JSON_MAIN, LEAGUE);
     $('#predictionTab').hide();
 
 };
@@ -554,65 +653,96 @@ Array.from(leagueButtons).forEach(function(element) {
 
 $(document).ready(function(){
 
-    $('.topButton').hover(
-        function () {							
+    if (!MOBILE_FLAG) {
 
-            $(this).animate({
-                backgroundColor: "#4f565a"
-            }, 100 );
+        $('.topButton').hover(
+            function () {							
 
-            $(this).css('cursor','pointer');
+                $(this).animate({
+                    backgroundColor: DL_MODE_PARAMS['hover-button-color']
+                }, 100 );
 
-        },
-        function () {
+                $(this).css('cursor','pointer');
 
-            $(this).animate({
-                backgroundColor: "#36454f"
-            }, 100 );
+            },
+            function () {
 
-        }
-    );
+                $(this).animate({
+                    backgroundColor: DL_MODE_PARAMS['main-button-color']
+                }, 100 );
 
-    $('.leagueButton').hover(
-        function () {							
+            }
+        );
 
-            $(this).animate({
-                backgroundColor: "#4f565a"
-            }, 100 );
+        $('.leagueButton').hover(
+            function () {							
 
-            $(this).css('cursor','pointer');
+                $(this).animate({
+                    backgroundColor: DL_MODE_PARAMS['hover-button-color']
+                }, 100 );
 
-        },
-        function () {
+                $(this).css('cursor','pointer');
 
-            $(this).animate({
-                backgroundColor: "#36454f"
-            }, 100 );
+            },
+            function () {
 
-        }
-    );
+                $(this).animate({
+                    backgroundColor: DL_MODE_PARAMS['main-button-color']
+                }, 100 );
+
+            }
+        );
+
+        const imgScale = 1.25
+        var imgHeight = document.getElementById("darkModeIcon").height;
+        var imgWidth = document.getElementById("darkModeIcon").width;
+
+        var newImgHeight = imgHeight * imgScale;
+        var newImgWidth = imgWidth * imgScale;
+
+        $('#darkModeIcon').hover(
+            function () {							
+
+                $(this).animate({
+                    width: newImgWidth,
+                    height: newImgHeight
+                }, 50);
+
+                $(this).css('cursor','pointer');
+
+            },
+            function () {
+
+                $(this).animate({
+                    width: imgWidth,
+                    height: imgHeight
+                }, 50);
+
+            }
+        );
+
+    };
 
 });
 
 // #######################    plots    ##################################
 
-const plotMargin = 30;
-const plotMarginLeft = 150;
-
-const plotColor = '#2f363b';
-const fontFamily = getComputedStyle(document.documentElement).getPropertyValue('--main-font-family');
-
-console.log(fontFamily);
-
 function make1DPlot(xArray, yArray, targetDiv){
+    
+    var plotMargin = 30;
+    var plotMarginLeft = 150;
+    
+    var plotColor = DL_MODE_PARAMS['main-menu-color'];
+    var fontFamily = getComputedStyle(document.documentElement).getPropertyValue('--main-font-family');
 
     var trace1 = {
         x: xArray,
         y: yArray,
         type: "waterfall",
         orientation: 'h',
-        decreasing: { marker: { color: "#ff8181"} },
-        increasing: { marker: { color: "#51ff94"} },
+        decreasing: { marker: { color: DL_MODE_PARAMS['loss-color']} },
+        increasing: { marker: { color: DL_MODE_PARAMS['win-color']} },
+        opacity: 0.9,
         connector: {
             mode: "between",
             line: {
@@ -636,21 +766,21 @@ function make1DPlot(xArray, yArray, targetDiv){
             text:'SHAP local explanation',
             font: {
                 family: fontFamily,
-                color: '#ffffff'
+                color: DL_MODE_PARAMS['main-font-color']
             }
         },
         xaxis:{
             title: {
                 text: 'Predicted goal difference',
                 font: {
-                    color: '#ffffff',
+                    color: DL_MODE_PARAMS['main-font-color'],
                     family: fontFamily,
                     size: 12
                 }
             },
             tickfont: {
                 family: fontFamily,
-                color: '#ffffff'
+                color: DL_MODE_PARAMS['main-font-color']
             },
             fixedrange: true,
         },
@@ -660,7 +790,7 @@ function make1DPlot(xArray, yArray, targetDiv){
             tickfont: {
                 family: fontFamily,
                 size: 14,
-                color: '#ffffff',
+                color: DL_MODE_PARAMS['main-font-color'],
             },
             fixedrange: true,
         },
