@@ -6,7 +6,7 @@
 
 This is a web app that helps to visualize football predictions and how each input variable affects the output. Below is an example of a match report. Each bar represents the marginal contribution of the corresponding variable on the output.
 
-![](https://i.imgur.com/ltLPQPC.png)
+![](https://i.imgur.com/1DK65Mh.png)
 
 ## 2. How was it done?
 
@@ -26,7 +26,7 @@ Source: https://github.com/slundberg/shap
 
 Below we can see the model performance in terms of accuracy and ROI:
 
-![alt text](https://i.imgur.com/PTpKyxs.png)
+![alt text](https://i.imgur.com/sKYeq3O.png)
 
 All data taken from: https://www.football-data.co.uk/
 
