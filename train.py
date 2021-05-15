@@ -25,11 +25,11 @@ leagues = {
     'N1': 17
 }
 
-def train(leagues):
+def train(leagues, odds=True):
 
     for league in leagues:
 
-        X_train, y_train, _ = loadDf(f'processedData/train_{league}.csv', shuffle_yn=True)
+        X_train, y_train, _ = loadDf(f'processedData/train_{league}.csv', shuffle_yn=True, odds=odds)
 
         reg = GradientBoostingRegressor(
             random_state=0,
@@ -44,19 +44,20 @@ def train(leagues):
         reg.fit(X_train, y_train)
 
         # save
-        file_name = f"models/model_{league}.pkl"
+        sfx = "" if odds else "_mini"
+        file_name = f"models/model_{league}{sfx}.pkl"
         pickle.dump(reg, open(file_name, "wb"))
         print(f'{league} done')
 
 
-def predict(leagues):
+def predict(leagues, odds=True):
 
     out = {}
 
     for league in leagues:
         print(league)
 
-        X_test, _, test = loadDf(f'processedData/test_{league}.csv', shuffle_yn=False)
+        X_test, _, test = loadDf(f'processedData/test_{league}.csv', shuffle_yn=False, odds=odds)
         if len(X_test) == 0:
             continue
 
@@ -105,5 +106,6 @@ def predict(leagues):
         json.dump(out, outfile)
 
 
-# train(leagues.keys())
+# train(leagues.keys(), odds=True)
+# train(leagues.keys(), odds=False)
 # predict(leagues.keys())

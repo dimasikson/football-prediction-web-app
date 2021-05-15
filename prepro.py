@@ -1,6 +1,8 @@
 
 import numpy as np
 import pandas as pd
+
+from itertools import product
 import sys
 import wget
 import os
@@ -28,24 +30,16 @@ def downloadFiles(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
             yearStart = '0' + str(i)
             yearEnd = '0' + str(i+1)
-
             season = yearStart[-2:] + yearEnd[-2:]
 
-            url = r'https://www.football-data.co.uk/mmz4281/' + season + '/' + league + '.csv'
-
-            filename = league + '-' + season
+            url = f'https://www.football-data.co.uk/mmz4281/{season}/{league}.csv'
+            filename = f'{league}-{season}'
             print(filename)
 
+            folder = 'test' if i >= firstSeasonTest else 'train'
+            fpath = f'rawFiles/{folder}/{filename}.csv'
 
-            if i >= firstSeasonTest:
-                fpath = 'rawFiles/test/' + filename + '.csv'
-
-            else:
-                fpath = 'rawFiles/train/' + filename + '.csv'
-
-            if os.path.exists(fpath):
-                os.remove(fpath)
-
+            if os.path.exists(fpath): os.remove(fpath)
             wget.download(url, fpath)
 
             df = pd.read_csv(fpath, engine='python')
@@ -57,11 +51,10 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
     for league in leagues:
 
-        trainDfNone, testDfNone = True, True
-
+        trainDf, testDf = pd.DataFrame(), pd.DataFrame()
         firstSeasonLeague = max(firstSeason, leagues[league])
 
-        if train==False:
+        if not train:
             firstSeasonLeague = firstSeasonTest
 
         for i in range(firstSeasonLeague, lastSeason+1):
@@ -69,14 +62,10 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
             yearStart = '0' + str(i)
             yearEnd = '0' + str(i+1)
             season = yearStart[-2:] + yearEnd[-2:]
-            filename = league + '-' + season
+            filename = f'{league}-{season}'
             print(filename)
 
-            if i >= firstSeasonTest:
-                folder = 'test'
-            else:
-                folder = 'train'
-
+            folder = 'test' if i >= firstSeasonTest else 'train'
             fpath = f'rawFiles/{folder}/{filename}.csv'
             df = pd.read_csv(fpath, engine='python')
 
@@ -87,15 +76,24 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 fixtures = fixtures.loc[fixtures.loc[:, 'Div']==league, :]
                 fixtures.index = range(len(fixtures))
 
-                for row in range(len(fixtures)):
+                for _, row in fixtures.iterrows():
                     tmp = df.loc[
-                        (df.loc[:, 'Div']==fixtures.loc[:, 'Div'][row]) &
-                        (df.loc[:, 'HomeTeam']==fixtures.loc[:, 'HomeTeam'][row]) &
-                        (df.loc[:, 'AwayTeam']==fixtures.loc[:, 'AwayTeam'][row])
+                        (df.loc[:, 'Div']==row['Div']) &
+                        (df.loc[:, 'HomeTeam']==row['HomeTeam']) &
+                        (df.loc[:, 'AwayTeam']==row['AwayTeam'])
                     ,:]
 
                     if len(tmp) == 0:
-                        df = df.append(fixtures.iloc[row, :])
+                        df = df.append(row)
+
+                # add remaining games
+                MERGE_COLS = ['HomeTeam','AwayTeam']
+                all_teams = df.loc[:, 'HomeTeam'].append(df.loc[:, 'AwayTeam']).sort_values().unique()
+                all_games = pd.DataFrame(list(product(all_teams, all_teams)), columns=MERGE_COLS)
+                all_games = all_games.loc[all_games.loc[:, 'HomeTeam'] != all_games.loc[:, 'AwayTeam'], :]
+
+                df = pd.merge(all_games, df, how='left', left_on=MERGE_COLS, right_on=MERGE_COLS)
+                df.loc[:, 'Div'] = league
 
             if i >= 19:
                 df = df.rename(columns={
@@ -228,6 +226,9 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                     computedVals['L3M_Points_H'].append(None)
                     computedVals['L3M_Points_A'].append(None)
 
+                # skip updating table if no result
+                if tempDfRow['FTR'] != tempDfRow['FTR']: continue
+
                 # calculate variance of result
                 hBin = 1 if tempDfRow['FTR'] == 'H' else 0
                 dBin = 1 if tempDfRow['FTR'] == 'D' else 0
@@ -274,7 +275,6 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 qPoints[ATeam].append(tempDfRow['Points_A'])
 
                 # sort table + update T_TablePosition
-
                 table[HTeam] = tempTableHome
                 table[ATeam] = tempTableAway
 
@@ -303,37 +303,17 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 df.loc[:, f'T_Accuracy_{ha}'] = np.clip(df.loc[:, f'T_Accuracy_{ha}'],0,1)
 
             if i < firstSeasonTest:
-                if trainDfNone:
-                    trainDf = df
-                    trainDfNone = False
-
-                else:
-                    trainDf = trainDf.append(df)
-
+                trainDf = trainDf.append(df)
             else:
-                if testDfNone:
-                    testDf = df
-                    testDfNone = False
-
-                else:
-                    testDf = testDf.append(df)
+                testDf = testDf.append(df)
 
 
         if train:
-
             trainDf.index = range(len(trainDf))
             fpath = f'processedData/train_{league}.csv'
-
-            if os.path.exists(fpath):
-                os.remove(fpath)
-
             trainDf.to_csv(fpath)
 
         testDf.index = range(len(testDf))
         fpath = f'processedData/test_{league}.csv'
-
-        if os.path.exists(fpath):
-            os.remove(fpath)
-
         testDf.to_csv(fpath)
 
