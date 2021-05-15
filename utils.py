@@ -2,19 +2,11 @@
 from datetime import datetime
 import pandas as pd
 
-def cleanDate(obj, dtFormat=r'%Y-%m-%d'):
-    year = obj.apply(lambda x: '20'+x.split('/')[2][-2:]) 
-    month = obj.apply(lambda x: x.split('/')[1])
-    day = obj.apply(lambda x: x.split('/')[0]) 
-
-    obj = year + '-' + month + '-' + day
-    return obj.apply(lambda x: datetime.strptime(x, dtFormat))
-
 def loadDf(fpath, shuffle_yn=False, odds=True):
 
     df = pd.read_csv(fpath, engine='python')
 
-    df.loc[:, 'Date'] = cleanDate(df.loc[:, 'Date'].fillna('01/01/2000'))
+    df.loc[:, 'Date'] = pd.to_datetime(df.loc[:, 'Date'], format="%Y-%m-%d")
     df = df.loc[(df['T_GamesPlayed_H'] >= 3) & (df['T_GamesPlayed_A'] >= 3)]
     df = df.fillna(0)
 

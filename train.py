@@ -11,7 +11,7 @@ import datetime
 import time
 import json
 
-from utils import cleanDate, loadDf, printResults
+from utils import loadDf, printResults
 from storage import PREDICTED_FPATH
 
 leagues = {

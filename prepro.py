@@ -93,7 +93,10 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 all_games = all_games.loc[all_games.loc[:, 'HomeTeam'] != all_games.loc[:, 'AwayTeam'], :]
 
                 df = pd.merge(all_games, df, how='left', left_on=MERGE_COLS, right_on=MERGE_COLS)
-                df.loc[:, 'Div'] = league
+                df.loc[:, 'Div'] = df.loc[:, 'Div'].fillna(league)
+                df.loc[:, 'Date'] = pd.to_datetime(df.loc[:, 'Date'].fillna('31/12/2099'), format="%d/%m/%Y")
+                df.loc[:, 'Time'] = df.loc[:, 'Time'].fillna('23:59')
+                df = df.sort_values(['Date', 'Time'])
 
             if i >= 19:
                 df = df.rename(columns={
