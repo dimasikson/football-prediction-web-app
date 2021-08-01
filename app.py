@@ -6,28 +6,15 @@ import time
 import datetime
 import os
 
-from update import updatePredictions
-from storage import downloadFileAzure, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME, PREDICTED_FPATH
+from update import pipelineRun
+from utils import getUrlKwargs
+from storage import downloadFileAzure
+from config import Config as cfg
 
 app = Flask(__name__)
 app.secret_key = 'SECRET KEY'
 
-downloadFileAzure(PREDICTED_FPATH, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME)
-
-firstSeason = 0
-firstSeasonTest = 20
-lastSeason = 20
-
-leagues = {
-    'E0': 5,
-    'D1': 6,
-    'I1': 5,
-    'SP1': 5,
-    'F1': 5,
-    'E1': 5,
-    'P1': 17,
-    'N1': 17
-}
+downloadFileAzure(cfg.PREDICTED_FPATH, cfg.AZURE_CONNECTION_STRING, cfg.AZURE_CONTAINER_NAME)
 
 @app.route('/', methods=['POST','GET'])
 def index():
@@ -36,15 +23,16 @@ def index():
 # hidden feature for emergency data refresh, /refreshData after URL
 @app.route('/refreshData', methods=['POST','GET'])
 def indexRefresh():
-    updatePredictions(
-        download=True,
-        preprocess=True, 
-        predictYN=True, 
-        leagues=leagues,
-        firstSeason=firstSeason, 
-        firstSeasonTest=firstSeasonTest, 
-        lastSeason=lastSeason, 
-        train=False
+
+    # get args from url
+    kwargs = getUrlKwargs(cfg.UPDATE_ARGS, request.args)
+
+    pipelineRun(
+        leagues=cfg.LEAGUES,
+        firstSeason=cfg.FIRST_SEASON, 
+        firstSeasonTest=cfg.FIRST_SEASON_TEST, 
+        lastSeason=cfg.LAST_SEASON, 
+        **kwargs,
     )
     return redirect('/')
 

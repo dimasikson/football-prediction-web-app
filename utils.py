@@ -2,11 +2,19 @@
 from datetime import datetime
 import pandas as pd
 
+def getUrlKwargs(default_dict, args):
+    out = {}
+
+    for k, v in default_dict.items():
+        out[k] = str(args.get(k, v)) == "True"
+
+    return out
+
 def loadDf(fpath, shuffle_yn=False, odds=True):
 
     df = pd.read_csv(fpath, engine='python')
 
-    df.loc[:, 'Date'] = pd.to_datetime(df.loc[:, 'Date'], format="%Y-%m-%d")
+    df.loc[:, 'Date'] = pd.to_datetime(df.loc[:, 'Date'])
     df = df.loc[(df['T_GamesPlayed_H'] >= 3) & (df['T_GamesPlayed_A'] >= 3)]
     df = df.fillna(0)
 

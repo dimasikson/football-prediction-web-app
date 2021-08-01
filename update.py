@@ -1,35 +1,40 @@
 from prepro import downloadFiles, preProcess
-from train import predict
-from storage import uploadFileAzure, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME, PREDICTED_FPATH
+from train import train, predict
+from storage import uploadFileAzure
+from config import Config as cfg
 import os
 
-def updatePredictions(download, preprocess, predictYN, leagues, firstSeason, firstSeasonTest, lastSeason, train):
+def pipelineRun(downloadYN, preprocessYN, predictYN, leagues, firstSeason, firstSeasonTest, lastSeason, trainData, trainYN):
 
-    if download:
+    if downloadYN:
         downloadFiles(
             firstSeason=firstSeason, 
             firstSeasonTest=firstSeasonTest, 
             lastSeason=lastSeason, 
-            train=train, 
+            trainData=trainData, 
             leagues=leagues
         )
         print('Files downloaded!')
 
-    if preprocess:
+    if preprocessYN:
         preProcess(
             firstSeason=firstSeason, 
             firstSeasonTest=firstSeasonTest, 
             lastSeason=lastSeason, 
-            train=train, 
+            trainData=trainData, 
             leagues=leagues
         )
         print('Preprocessing done!')
+
+    if trainYN:
+        train(leagues=leagues)
+        print('Training done!')
 
     if predictYN:
         predict(leagues=leagues)
         print('Predictions done!')
 
-        uploadFileAzure(PREDICTED_FPATH, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME)
+        uploadFileAzure(cfg.PREDICTED_FPATH, cfg.AZURE_CONNECTION_STRING, cfg.AZURE_CONTAINER_NAME)
         print('Uploaded to Azure!')
 
 

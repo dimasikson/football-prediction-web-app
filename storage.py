@@ -9,18 +9,6 @@ from azure.storage.blob import BlobClient
 
 import os
 
-# Azure access
-AZURE_CONNECTION_STRING = os.environ["AZURE_CONNECTION_STRING"]
-AZURE_CONTAINER_NAME = os.environ["AZURE_CONTAINER_NAME"]
-
-# AWS access
-AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
-BUCKET_NAME = os.environ['S3_BUCKET']
-
-# fpath
-PREDICTED_FPATH = "static/predicted.txt"
-
 def uploadFileAWS(key, access_key, bucket_name, fpath):
     conn = boto.connect_s3(
         key,

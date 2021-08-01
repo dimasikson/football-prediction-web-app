@@ -12,18 +12,7 @@ import time
 import json
 
 from utils import loadDf, printResults
-from storage import PREDICTED_FPATH
-
-leagues = {
-    'E0': 5,
-    'D1': 6,
-    'I1': 5,
-    'SP1': 5,
-    'F1': 5,
-    'E1': 5,
-    'P1': 17,
-    'N1': 17
-}
+from config import Config as cfg
 
 def train(leagues, odds=True):
 
@@ -95,17 +84,18 @@ def predict(leagues, odds=True):
                     val = None
                     
                 if type(val) == pd.Timestamp:
-                    val = str(val)
+                    val = val.strftime('%Y-%m-%d')
                     
                 out[gameId][col] = val
 
         # print performance (accuracy, ROI)
         printResults(tmp, league)
     
-    with open(PREDICTED_FPATH, 'w') as outfile:
+    with open(cfg.PREDICTED_FPATH, 'w') as outfile:
         json.dump(out, outfile)
 
 
-# train(leagues.keys(), odds=True)
-# train(leagues.keys(), odds=False)
-# predict(leagues.keys())
+if __name__ == "__main__":
+    train(cfg.LEAGUES.keys(), odds=True)
+    train(cfg.LEAGUES.keys(), odds=False)
+    predict(cfg.LEAGUES.keys())

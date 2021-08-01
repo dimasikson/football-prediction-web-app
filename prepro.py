@@ -8,7 +8,7 @@ import wget
 import os
 import math
 
-def downloadFiles(firstSeason, firstSeasonTest, lastSeason, train, leagues):
+def downloadFiles(firstSeason, firstSeasonTest, lastSeason, trainData, leagues):
 
     fixtFpath = 'rawFiles/test/fixtures.csv'
     if os.path.exists(fixtFpath):
@@ -23,7 +23,7 @@ def downloadFiles(firstSeason, firstSeasonTest, lastSeason, train, leagues):
 
         firstSeasonLeague = max(firstSeason, leagues[league])
 
-        if train==False:
+        if not trainData:
             firstSeasonLeague = firstSeasonTest
 
         for i in range(firstSeasonLeague, lastSeason+1):
@@ -47,14 +47,14 @@ def downloadFiles(firstSeason, firstSeasonTest, lastSeason, train, leagues):
             df.to_csv(fpath)
 
 
-def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
+def preProcess(firstSeason, firstSeasonTest, lastSeason, trainData, leagues):
 
     for league in leagues:
 
         trainDf, testDf = pd.DataFrame(), pd.DataFrame()
         firstSeasonLeague = max(firstSeason, leagues[league])
 
-        if not train:
+        if not trainData:
             firstSeasonLeague = firstSeasonTest
 
         for i in range(firstSeasonLeague, lastSeason+1):
@@ -93,10 +93,6 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 all_games = all_games.loc[all_games.loc[:, 'HomeTeam'] != all_games.loc[:, 'AwayTeam'], :]
 
                 df = pd.merge(all_games, df, how='left', left_on=MERGE_COLS, right_on=MERGE_COLS)
-                df.loc[:, 'Div'] = df.loc[:, 'Div'].fillna(league)
-                df.loc[:, 'Date'] = pd.to_datetime(df.loc[:, 'Date'].fillna('31/12/2099'), format="%d/%m/%Y")
-                df.loc[:, 'Time'] = df.loc[:, 'Time'].fillna('23:59')
-                df = df.sort_values(['Date', 'Time'])
 
             if i >= 19:
                 df = df.rename(columns={
@@ -105,7 +101,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                     'MaxA': 'BbMxA'
                 })
 
-            df = df[[
+            original_cols = [
                 'Div',
                 'Date', 'Time',
                 'HomeTeam', 'AwayTeam',
@@ -115,7 +111,18 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 'HS', 'AS',
                 'HST', 'AST',
                 'BbMxH', 'BbMxD', 'BbMxA'
-                ]]
+            ]
+
+            for c in original_cols:
+                if c not in df.columns:
+                    df.loc[:, c] = ""
+
+            df.loc[:, 'Div'] = df.loc[:, 'Div'].fillna(league)
+            df.loc[:, 'Date'] = pd.to_datetime(df.loc[:, 'Date'].fillna('2099-12-31'))
+            df.loc[:, 'Time'] = df.loc[:, 'Time'].fillna('23:59')
+            df = df.sort_values(['Date', 'Time'])
+
+            df = df[original_cols]
 
             df.columns = [
                     'Div',
@@ -311,7 +318,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, train, leagues):
                 testDf = testDf.append(df)
 
 
-        if train:
+        if trainData:
             trainDf.index = range(len(trainDf))
             fpath = f'processedData/train_{league}.csv'
             trainDf.to_csv(fpath)
