@@ -168,7 +168,7 @@ var loadMatches = function (json, league) {
         sumReturnDate[matchDates[i]] = 0;
 
         var dateSplit = matchDates[i].split('-');
-        var dateDisplay = parseInt(dateSplit[1]) + " " + monthsConvert[dateSplit[2]] + " " + dateSplit[0];
+        var dateDisplay = parseInt(dateSplit[2]) + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0];
 
         var textnode = document.createElement('span');
         textnode.innerHTML = dateDisplay;
@@ -455,7 +455,7 @@ const matchButtonsOnClick = function(event) {
     $('#predictionTabPred').css('color',colorPred);
 
     var dateSplit = gameStats['Date'].split(' ')[0].split('-');
-    var dateDisplay = parseInt(dateSplit[1]) + " " + monthsConvert[dateSplit[2]] + " " + dateSplit[0] + ", " + gameStats['Time'];
+    var dateDisplay = parseInt(dateSplit[2]) + " " + monthsConvert[dateSplit[1]] + " " + dateSplit[0] + ", " + gameStats['Time'];
 
     var hTeam = gameStats['HomeTeam'];
     var aTeam = gameStats['AwayTeam'];

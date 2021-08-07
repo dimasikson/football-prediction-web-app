@@ -2,6 +2,15 @@
 from datetime import datetime
 import pandas as pd
 
+def fixOldDate(x):
+    '''Fixing old dates. E.g. converting 13/08/05 to 13/08/2005'''
+    x_split = x.split("/")
+    if len(x_split[-1]) == 4: 
+        return x
+    else:
+        x_split[-1] = "20" + x_split[-1]
+        return "/".join(x_split)
+
 def getUrlKwargs(default_dict, args):
     out = {}
 

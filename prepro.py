@@ -8,6 +8,8 @@ import wget
 import os
 import math
 
+from utils import fixOldDate
+
 def downloadFiles(firstSeason, firstSeasonTest, lastSeason, trainData, leagues):
 
     fixtFpath = 'rawFiles/test/fixtures.csv'
@@ -118,7 +120,7 @@ def preProcess(firstSeason, firstSeasonTest, lastSeason, trainData, leagues):
                     df.loc[:, c] = ""
 
             df.loc[:, 'Div'] = df.loc[:, 'Div'].fillna(league)
-            df.loc[:, 'Date'] = pd.to_datetime(df.loc[:, 'Date'].fillna('2099-12-31'))
+            df.loc[:, 'Date'] = pd.to_datetime(df.loc[:, 'Date'].fillna('31/12/2099').apply(lambda x: fixOldDate(x)), format="%d/%m/%Y")
             df.loc[:, 'Time'] = df.loc[:, 'Time'].fillna('23:59')
             df = df.sort_values(['Date', 'Time'])
 
