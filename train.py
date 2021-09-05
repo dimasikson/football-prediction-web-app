@@ -96,6 +96,5 @@ def predict(leagues, odds=True):
 
 
 if __name__ == "__main__":
-    train(cfg.LEAGUES.keys(), odds=True)
-    train(cfg.LEAGUES.keys(), odds=False)
+    train(cfg.LEAGUES.keys())
     predict(cfg.LEAGUES.keys())

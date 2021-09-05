@@ -41,13 +41,15 @@ def downloadFiles(firstSeason, firstSeasonTest, lastSeason, trainData, leagues):
             folder = 'test' if i >= firstSeasonTest else 'train'
             fpath = f'rawFiles/{folder}/{filename}.csv'
 
-            if os.path.exists(fpath): os.remove(fpath)
-            wget.download(url, fpath)
+            try:
+                if os.path.exists(fpath): os.remove(fpath)
+                wget.download(url, fpath)
 
-            df = pd.read_csv(fpath, engine='python')
-            df = df.loc[df['FTHG'] == df['FTHG']]
-            df.to_csv(fpath)
+                df = pd.read_csv(fpath, engine='python')
+                df = df.loc[df['FTHG'] == df['FTHG']]
+                df.to_csv(fpath)
 
+            except: pass
 
 def preProcess(firstSeason, firstSeasonTest, lastSeason, trainData, leagues):
 

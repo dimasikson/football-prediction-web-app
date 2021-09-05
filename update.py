@@ -37,4 +37,15 @@ def pipelineRun(downloadYN, preprocessYN, predictYN, leagues, firstSeason, first
         uploadFileAzure(cfg.PREDICTED_FPATH, cfg.AZURE_CONNECTION_STRING, cfg.AZURE_CONTAINER_NAME)
         print('Uploaded to Azure!')
 
-
+if __name__ == "__main__":
+    pipelineRun(
+        leagues=cfg.LEAGUES,
+        firstSeason=cfg.FIRST_SEASON, 
+        firstSeasonTest=cfg.FIRST_SEASON_TEST, 
+        lastSeason=cfg.LAST_SEASON, 
+        downloadYN=False,
+        preprocessYN=True,
+        trainData=True,
+        trainYN=True,
+        predictYN=True,
+    )

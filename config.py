@@ -26,15 +26,14 @@ class Config:
         'P1': 17,
         'N1': 17,
         'T1': 17,
-        'G1': 17,
         'B1': 17,
         'SC0': 17,
     }
 
     # train / test split by season
     FIRST_SEASON = 0
-    FIRST_SEASON_TEST = 20
-    LAST_SEASON = 20
+    FIRST_SEASON_TEST = 21
+    LAST_SEASON = 21
 
     # args of update url
     UPDATE_ARGS = {
