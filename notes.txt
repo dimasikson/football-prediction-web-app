@@ -1,0 +1,29 @@
+storage:
+    - [DONE] test if app can query from blob fast enough (otherwise need SQL db?)
+    - [DONE] a "table" will be a folder partitioned by league and season
+    - [DONE] can have common functions to read / write to the table
+    - [DONE] tables needed:
+        - [DONE] results
+        - [DONE] fixtures
+        - [DONE] processed (input for modelling)
+        - [DONE] predictions
+
+backend:
+    - [DONE] refactor pipeline to update data (results and fixtures)
+    - [DONE] refactor pipeline to pre-process data
+    - [DONE] create training notebook
+    - [] have logic for selecting the current season
+    - [] automate re-training every once in a while
+    - [] schedule pipeline via logic apps / web-jobs (static model)
+
+frontend:
+    - [] explore streamlit as frontend
+    - [] restructure the JS code (find some proper guide like pep8 but for frontend)
+    - [] the large JSON should not be loaded as global variable, instead every page refresh should query the data
+    - [] the interface is too narrow on desktop (have adjustable screen size depending on the device)
+
+mlops:
+    - [DONE] explore hyperopt
+    - [] monitoring
+    - [] drift detection
+    - [] what else?
