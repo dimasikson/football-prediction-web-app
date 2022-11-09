@@ -1,4 +1,4 @@
-
+from datetime import datetime
 import os
 
 class Config:
@@ -29,9 +29,11 @@ class Config:
                "T1": 17,
                "B1": 17}
 
-    # first and last season (starting year)
+    # First and last season (starting year).
+    # For current year, get current year and subtract 1 if current month is June or lower.
+    # So long as something like covid does not happen again, this assumption should hold.
     FIRST_SEASON = 5
-    CURRENT_SEASON = 22
+    CURRENT_SEASON = (datetime.now().year - 2000) - (datetime.now().month <= 6)
 
     # column mapping
     TARGET_COL = "F_H_DIFF"

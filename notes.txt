@@ -27,12 +27,7 @@ frontend:
     - [DONE] add the match-page (chart, facts, odds)
 
 deploy & orchestration:
-    - [] have logic for selecting the current season
-    - [] automate re-training every once in a while
+    - [DONE] have logic for selecting the current season
+    - [] deploy frontend without manual refresh option
     - [] schedule pipeline via logic apps / web-jobs (static model)
-
-mlops:
-    - [DONE] explore hyperopt
-    - [] monitoring
-    - [] drift detection
-    - [] what else?
+    - [] automate re-training every once in a while
