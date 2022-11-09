@@ -4,11 +4,11 @@ from datetime import datetime
 
 import pandas as pd
 
-from config import Config as cfg
-from explain import get_shap_explanations
-from preprocess import SeasonProcessor
-from storage import AzureBlobTable, ExternalBlobTable
-from utils import get_partitions, clean_results, split_features_target
+from ..explain.shap import get_shap_explanations
+from ..preprocess.features import SeasonProcessor
+from ..storage.tables import AzureBlobTable, ExternalBlobTable
+from ..utils.functions import get_partitions, clean_results, split_features_target, enrich_df_with_predictions
+from ..utils.config import Config as cfg
 
 
 def refresh_fixtures():
@@ -54,7 +54,8 @@ def generate_predictions(table_name):
 
     # generate prediction
     X_data, y_data = split_features_target(data)
-    data["Y_PRED"] = model.predict(X_data)
+    pred = model.predict(X_data)
+    data = enrich_df_with_predictions(data, pred)
 
     # add shap values
     shap_values = get_shap_explanations(X_data, model)
@@ -62,19 +63,3 @@ def generate_predictions(table_name):
 
     az_table = AzureBlobTable(cfg.AZURE_PREDICTIONS_TABLE, ftype="parquet")
     az_table.upload({"data": data})
-
-if __name__ == "__main__":
-    train_partitions = get_partitions(cfg.FIRST_SEASON, cfg.CURRENT_SEASON - 1)
-    test_partitions = get_partitions(cfg.CURRENT_SEASON - 1, cfg.CURRENT_SEASON)
-    valid_partitions = get_partitions(cfg.CURRENT_SEASON, cfg.CURRENT_SEASON + 1)
-
-    # refresh_fixtures()
-    # refresh_results(train_partitions)
-    # refresh_results(test_partitions)
-    # refresh_results(valid_partitions)
-
-    # preprocess_results(train_partitions, "train")
-    # preprocess_results(test_partitions, "test")
-    # preprocess_results(valid_partitions, "valid", add_fixtures=True)
-
-    # generate_predictions("valid")

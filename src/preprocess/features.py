@@ -5,7 +5,7 @@ import copy
 import pandas as pd
 import numpy as np
 
-from config import Config as cfg
+from ..utils.config import Config as cfg
 
 
 class SeasonProcessor:

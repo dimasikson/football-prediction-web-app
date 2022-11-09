@@ -67,3 +67,7 @@ class Config:
                    "AvgH": "ODDS_H_AVG",
                    "AvgD": "ODDS_D_AVG",
                    "AvgA": "ODDS_A_AVG"}
+
+    PRED_MAPPING = {1.0: "H",
+                    0.0: "D",
+                   -1.0: "A"}

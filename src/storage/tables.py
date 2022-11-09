@@ -7,7 +7,7 @@ import pickle
 import pandas as pd
 from azure.storage.blob import BlobClient
 
-from config import Config as cfg
+from ..utils.config import Config as cfg
 
 
 class BlobTable:

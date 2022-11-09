@@ -3,14 +3,14 @@ import math
 import pandas as pd
 import numpy as np
 
-from config import Config as cfg
+from .config import Config as cfg
 
 
 def get_partitions(min_season, max_season):
     partitions = []
     for league, first_season in cfg.LEAGUES.items():
         rng = range(max(min_season, first_season), max_season + 1)
-        seasons = [("0" + str(num))[-2:] for num in rng]
+        seasons = ["{:02d}".format(num) for num in rng]
         partitions += [f"{left + right}/{league}" for left, right in zip(seasons[:-1], seasons[1:])]
 
     return partitions
@@ -32,15 +32,11 @@ def split_features_target(df):
     return X, y
 
 def enrich_df_with_predictions(df, pred):
-    pred_mapping = {1.0: "ODDS_H_MAX",
-                    0.0: "ODDS_D_MAX",
-                   -1.0: "ODDS_A_MAX"}
-
     df["PRED_DIFF"] = pred
     df["PRED_RESULT_NUM"] = np.sign(df["PRED_DIFF"].round())
     df["F_RESULT_NUM"] = np.sign(df[cfg.TARGET_COL])
     df["PRED_CORRECT"] = df["PRED_RESULT_NUM"] == df["F_RESULT_NUM"]
-    df["PRED_ODDS"] = df.apply(lambda x: x[pred_mapping[x["PRED_RESULT_NUM"]]], axis=1)
+    df["PRED_ODDS"] = df.apply(lambda x: x[f"ODDS_{cfg.PRED_MAPPING[x['PRED_RESULT_NUM']]}_MAX"], axis=1)
     df["PRED_RETURNS"] = (df["PRED_ODDS"] * df["PRED_CORRECT"]) - 1
     return df
 

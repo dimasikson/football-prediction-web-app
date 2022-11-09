@@ -12,15 +12,24 @@ backend:
     - [DONE] refactor pipeline to update data (results and fixtures)
     - [DONE] refactor pipeline to pre-process data
     - [DONE] create training notebook
+    - [DONE] run full experiment one more time
+
+frontend:
+    - [DONE] explore streamlit as frontend
+    - [DONE] build dirty one-script front page
+        - [DONE] show upcoming games
+        - [DONE] n_games selector
+        - [DONE] dropdown titles must be clearer
+        - [DONE] if a date is partially shown, select all games in that date
+    - [DONE] clean up the code
+        - [DONE] restructure folders
+        - [DONE] organize app.py
+    - [DONE] add the match-page (chart, facts, odds)
+
+deploy & orchestration:
     - [] have logic for selecting the current season
     - [] automate re-training every once in a while
     - [] schedule pipeline via logic apps / web-jobs (static model)
-
-frontend:
-    - [] explore streamlit as frontend
-    - [] restructure the JS code (find some proper guide like pep8 but for frontend)
-    - [] the large JSON should not be loaded as global variable, instead every page refresh should query the data
-    - [] the interface is too narrow on desktop (have adjustable screen size depending on the device)
 
 mlops:
     - [DONE] explore hyperopt
