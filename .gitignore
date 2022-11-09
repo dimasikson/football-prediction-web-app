@@ -1,4 +1,3 @@
 __pycache__/
-env/
-football web app instructions.txt
-test.ipynb
+.env/
+.ipynb_checkpoints/

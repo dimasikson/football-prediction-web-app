@@ -1,0 +1,33 @@
+storage:
+    - [DONE] test if app can query from blob fast enough (otherwise need SQL db?)
+    - [DONE] a "table" will be a folder partitioned by league and season
+    - [DONE] can have common functions to read / write to the table
+    - [DONE] tables needed:
+        - [DONE] results
+        - [DONE] fixtures
+        - [DONE] processed (input for modelling)
+        - [DONE] predictions
+
+backend:
+    - [DONE] refactor pipeline to update data (results and fixtures)
+    - [DONE] refactor pipeline to pre-process data
+    - [DONE] create training notebook
+    - [DONE] run full experiment one more time
+
+frontend:
+    - [DONE] explore streamlit as frontend
+    - [DONE] build dirty one-script front page
+        - [DONE] show upcoming games
+        - [DONE] n_games selector
+        - [DONE] dropdown titles must be clearer
+        - [DONE] if a date is partially shown, select all games in that date
+    - [DONE] clean up the code
+        - [DONE] restructure folders
+        - [DONE] organize app.py
+    - [DONE] add the match-page (chart, facts, odds)
+
+deploy & orchestration:
+    - [DONE] have logic for selecting the current season
+    - [] deploy frontend without manual refresh option
+    - [] schedule pipeline via logic apps / web-jobs (static model)
+    - [] automate re-training every once in a while
