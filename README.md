@@ -2,54 +2,79 @@
 
 ### Link: https://football-prediction-web-app.azurewebsites.net/
 
-## 1. What is this?
+## 1. What is this project?
 
-This is a web app that helps to visualize football predictions and how each input variable affects the output. Below is an example of a match report. Each bar represents the marginal contribution of the corresponding variable on the output.
+This project aims to predict football results and explain the predictions. Those things are done using `XGBoost` and `SHAP` respectively. There is also a `streamlit` app to visualize / track performance.
 
-![](https://i.imgur.com/1DK65Mh.png)
+### Front page:
+
+<img width="535" alt="image" src="https://user-images.githubusercontent.com/47122797/201469493-bb60bee7-047c-4293-a75a-6868271993d9.png">
+
+### Match page:
+
+<img width="536" alt="image" src="https://user-images.githubusercontent.com/47122797/201469516-53900aa8-0f02-403b-8718-eaba00a9b8de.png">
 
 ## 2. How was it done?
 
-### 2.1 Modelling
+### 2.1 Gathering data & storage
 
-We use Gradient Boosted Regression Trees to predict the goal difference of a game, Home team goals [minus] Away team goals. Boosted trees are a great choice for this as it performs well with tabular data with non-linear interactions with the output. Below chart explains how the residuals of each tree are fed into each next tree, thus performing gradient boosting:
+Initial data is taken from: https://www.football-data.co.uk/
 
-![](https://media.geeksforgeeks.org/wp-content/uploads/20200721214745/gradientboosting.PNG)
+Data is then enriched with features, mainly consisting of stats (goals, shots, fouls, etc.). It is tricky to reconstruct what the table looked like before the game, for that I made a `LeagueTable` class. Check out `src/preprocess/features.py` for more detail.
 
-Source: https://www.geeksforgeeks.org/ml-gradient-boosting/
+For storage I use Azure Blob. I wrote common read/write methods to simplify data management, check out `src/storage/tables.py` for more detail.
 
-The algorithm also pairs well with the SHAP package which helps to explain each prediction by assigning marginal impact on the output to each input variable:
+### 2.2 Model choice
+
+I used `XGBoost` as it's a highly performing algorithm on tabular data. It also handles missing data well, which is important as in this project there are naturally some missing features which should not be imputed (at the start of the season, all statistics are empty for each team).
+
+![image](https://user-images.githubusercontent.com/47122797/201469876-32d7f46c-918c-40b8-8aac-d6fb1dc94240.png)
+
+Source: https://towardsdatascience.com/https-medium-com-vishalmorde-xgboost-algorithm-long-she-may-rein-edd9f99be63d
+
+### 2.3 Training & hyperparameter experiment
+
+I used `hyperopt` to optimize the model. It accepts any abstract objective function with the following form `f(X) -> y` where `y` is a float, but I used a standard RMSE output to optimize the model. Please check out `train.ipynb` and `src/modelling/experiment.py` for more detail.
+
+NOTE: Training is fully offline & local. Eventually I want to move to Azure ML / Synapse but for now that's too much work for a pet project :^)
+
+<img width="739" alt="image" src="https://user-images.githubusercontent.com/47122797/201470160-5cd6d3c9-d131-4076-9f20-10eeffbca266.png">
+
+### 2.4 Explaning predictions
+
+XGBoost also pairs well with the `SHAP` package which helps to explain each prediction by assigning marginal impact on the output to each input variable. To be perfectly honest, this part of the project has been underwhelming as most of the variation in the predictions are usually explained by the odds.
 
 ![](https://raw.githubusercontent.com/slundberg/shap/master/docs/artwork/shap_header.png)
 
 Source: https://github.com/slundberg/shap
 
-Below we can see the model performance in terms of accuracy and ROI:
+### 2.5 Frontend
 
-![alt text](https://i.imgur.com/sKYeq3O.png)
+Frontend was done with `streamlit`, I would highly recommend it for anyone who hates doing frontend as much as I do. Really easy to use. Pretty limited framework but that's the point. A previous version of this project used the normal JS/CSS/HTML stack and I hated it so much.
 
-All data taken from: https://www.football-data.co.uk/
+### 2.6 Deployment
 
-### 2.2 Deployment
+Deployment is done with Azure App Service + Github Actions for CI/CD.
 
-- Model training is done offline, inference is done daily with a scheduled data refresh
-- Backend is done in Flask
-- Frontend is done with vanilla JS, HTML, CSS
-- Website hosted on Azure App Service, using Azure Blob Storage for storing data
+## 3. How to re-deploy (notes for future me)
 
-## 3. Why was it done?
+### 3.0 [Setup] How to set up App Service + GH Actions
 
-This web app is primarily for demonstration of data preprocessing, data modeling and some basic web development. The secondary purpose is to use it myself :)
+It's straightforward, just don't forget to specify the startup command in the portal.
 
-## 4. Feature glossary
+### 3.1 Re-deploy web-app
 
-Below is an explanation for each feature in the model:
-- Home/Draw/Away odds: European style odds for each outcome. If odds are 1.82 -> you pay 1.00 unit and receive 1.82 in case of a win.
-- Goals + (H/A): Cumulative average goals scored
-- Goals - (H/A): Cumulative average goals concered
-- Conversion (H/A): Shot-to-goal conversion, Goals / Shots on target
-- Accuracy (H/A): Shots on target / Shots
-- Pts average (H/A): Cumulative average points obtained 
-- Pts in last 3 (H/A): Average points in the last 3 games
-- Table position (H/A): Position in the table, treated as a continuous variable
-- Variance (H/A): Deviation of actual result from odds for each team. High variance means team has produced more surprising results, whether positive or negative 
+- Commit / merge to master.
+- Wait for build & release to come through.
+- [OPTIONAL] Restart application from portal.
+
+### 3.2 Set up data refresh
+
+- SSH into the VM in the portal
+- Run `crontab -e` and press `2`
+- Add the following cron expressions:
+  - `*/10 * * * * date > /tmp/test.txt` (TODO: determine if this is even needed, but for now I'm using it to keep the app alive)
+  - `0 0 * * 3,6 {full_python_path} run_pipelines.py` (3 and 6 denotes Wednesday and Saturday, approximately when the fixtures get refreshed)
+- NOTE: cron needs absolute paths for everything. You can get `{full_python_path}` by running `which python`
+- TODO: can these steps be automated?
+- TODO: set up occasional model re-training in Azure ML / Synapse and do away with this cron scheduling
