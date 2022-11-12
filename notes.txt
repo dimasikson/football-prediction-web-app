@@ -28,6 +28,10 @@ frontend:
 
 deploy & orchestration:
     - [DONE] have logic for selecting the current season
-    - [] deploy frontend without manual refresh option
-    - [] schedule pipeline via logic apps / web-jobs (static model)
+    - [DONE] deploy frontend without manual refresh option
+    - [DONE] schedule pipeline using cron (ssh into the vm and set up cron job; leave detailed instructions for future me)
     - [] automate re-training every once in a while
+
+misc:
+    - [] update README
+    - [] delete notes
